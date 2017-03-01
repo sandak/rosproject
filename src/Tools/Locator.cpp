@@ -33,7 +33,7 @@ Location Locator::locate(){
 void Locator::drawMap(){
 	cv::Mat_<cv::Vec3b>* m =new cv::Mat_<cv::Vec3b>(this->map.getHeight(),this->map.getWidth());
 	vector<Particle*>::iterator itr  = this->particles.begin();
-	uint32_t i,j;
+	int i,j;
 
 	for (i=0;i<this->map.getHeight();i++)
 	{

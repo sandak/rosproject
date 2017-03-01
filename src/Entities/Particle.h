@@ -8,8 +8,8 @@
 #ifndef SRC_PARTICLE_H_
 #define SRC_PARTICLE_H_
 #include "Location.h"
+#include <HamsterAPIClientCPP/Hamster.h>
 #include "LocationDelta.h"
-#include "HamsterAPIClientCPP/Hamster.h"
 class Particle {
 private:
 

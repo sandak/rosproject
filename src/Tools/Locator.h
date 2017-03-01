@@ -7,12 +7,13 @@
 
 #ifndef SRC_LOCATOR_H_
 #define SRC_LOCATOR_H_
-#include "../Entities/Location.h"
-#include "../Entities/Particle.h"
 #include <vector>
 #include <iterator>
-#include "HamsterAPIClientCPP/Hamster.h"
+#include <HamsterAPIClientCPP/Hamster.h>
+#include "../Entities/Location.h"
+#include "../Entities/Particle.h"
 #include "../Robot/Robot.h"
+
 
 
 

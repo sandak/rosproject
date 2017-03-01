@@ -7,7 +7,7 @@
 
 #ifndef SRC_ROBOT_H_
 #define SRC_ROBOT_H_
-#include "HamsterAPIClientCPP/Hamster.h"
+#include <HamsterAPIClientCPP/Hamster.h>
 #include "MovementPolicy.h"
 
 class Robot {

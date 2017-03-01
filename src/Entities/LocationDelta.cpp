@@ -6,7 +6,7 @@
  */
 
 #include "LocationDelta.h"
-#include "Location.h"
+//#include "Location.h"
 LocationDelta::LocationDelta(int x, int y, int yaw):Location(x,y,yaw) {
 	// TODO Auto-generated constructor stub
 

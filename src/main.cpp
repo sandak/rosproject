@@ -1,11 +1,14 @@
+#include <iostream>
 #include <HamsterAPIClientCPP/Hamster.h>
+
 #include "Robot/RandomMovementPolicy.h"
 #include "Robot/Robot.h"
 #include "Tools/Locator.h"
-#include <iostream>
+
 using namespace std;
+
 int main(){
-	HamsterAPI::Hamster* hamster = new HamsterAPI::Hamster(1);
+	HamsterAPI::Hamster* hamster;
 
 	try {
 			hamster = new HamsterAPI::Hamster(1);

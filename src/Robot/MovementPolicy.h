@@ -8,7 +8,7 @@
 #ifndef SRC_MOVEMENTPOLICY_H_
 #define SRC_MOVEMENTPOLICY_H_
 //#include "Robot.h"
-#include "HamsterAPIClientCPP/Hamster.h"
+#include <HamsterAPIClientCPP/Hamster.h>
 #include "../Entities/LocationDelta.h"
 
 class MovementPolicy {
