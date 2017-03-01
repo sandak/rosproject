@@ -10,18 +10,20 @@
 
 class Location {
 private:
-	int x,y,yaw;
-
+	int x,y;
+	float yaw;
 public:
-	Location(int x, int y, int yaw);
+
+	Location(int x, int y, float yaw);
+	Location();
 
 	Location operator+(Location delta);
 	int getX();
 	int getY();
-	int getYaw();
+	float getYaw();
 	void setX(int x);
 	void setY(int y);
-	void setYaw(int yaw);
+	void setYaw(float yaw);
 
 
 	virtual ~Location();

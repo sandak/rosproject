@@ -55,8 +55,6 @@ LocationDelta RandomMovementPolicy::move(){
 
 				}
 			}
-
-}
 		else
 		{
 			//TODO what if not connected?
@@ -144,9 +142,11 @@ LocationDelta* RandomMovementPolicy::moveForward() {
 	float minDistance = findMinDistance(170, 190);
 	if (minDistance > 5.0) {
 		minDistance = 5.0;
+
 	}
 	HamsterAPI::Log::i("Client", "Moving Forward");
 	hamster->sendSpeed(minDistance / 5.0, 0.0);
+
 }
 
 LocationDelta *RandomMovementPolicy::turnLeft() {

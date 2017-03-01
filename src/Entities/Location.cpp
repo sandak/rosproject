@@ -7,12 +7,17 @@
 
 #include "Location.h"
 
-Location::Location(int x, int y , int yaw) {
+Location::Location(int x, int y , float yaw) {
 	this->x = x;
 	this->y = y;
 	this->yaw = yaw;
 }
-
+Location::Location()
+{
+	this->x = 0;
+	this->y = 0;
+	this->yaw = 0;
+}
 Location Location::operator +(Location delta)
 {
 	this->setX(this->getX()+delta.getX());
@@ -27,7 +32,7 @@ int Location::getX(){
 int Location::getY(){
 	return this->y;
 }
-int Location::getYaw(){
+float Location::getYaw(){
 	return this->yaw;
 }
 
@@ -38,7 +43,7 @@ void Location::setX(int x){
 void Location::setY(int y){
 	this->y=y;
 }
-void Location::setYaw(int yaw){
+void Location::setYaw(float yaw){
 	this->yaw = yaw;
 }
 

@@ -13,7 +13,7 @@
  *
  *  Created on: Aug 10, 2016
  *      Author: ofir
- */
+
 
 #include <HamsterAPIClientCPP/Hamster.h>
 #include <iostream>
@@ -193,7 +193,7 @@ void stopMoving() {
 	}
 	return 0;
 }
-*/
+
 int main(int argc, char ** argv) {
 	try {
 
@@ -322,3 +322,4 @@ int showHamsterLaserMap(HamsterAPI::LidarScan ld) {
 
 	return 0;
 }
+*/

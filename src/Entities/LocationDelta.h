@@ -13,7 +13,7 @@
 class LocationDelta: public Location {
 
 public:
-	LocationDelta(int x, int y, int yaw);
+	LocationDelta(int x, int y, float yaw);
 	virtual ~LocationDelta();
 };
 

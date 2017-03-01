@@ -25,9 +25,9 @@ double Particle::getBelief(){
 
 void Particle::update(HamsterAPI::LidarScan lidar, LocationDelta delta)
 {
-	this->loc->x += delta.getX();
-	this->loc->y += delta.getY();
-	this->loc->yaw = delta.getYaw();
+	this->loc->setX(this->loc->getX() + delta.getX());
+	this->loc->setY(this->loc->getY() + delta.getY());
+	this->loc->setYaw(delta.getYaw());
 	double n_factor = 1.2;
 	this->belief = n_factor*this->getBelief()*probByMove(delta)*probScanMatch(lidar);
 
@@ -53,7 +53,7 @@ double Particle::probScanMatch(HamsterAPI::LidarScan lidar)
 
 }
 
-Location calcPos(int angle, int distance)
+Location Particle::calcPos(int angle, int distance)
 {
 	double norm;
 		double angleDeg, angleRad;
