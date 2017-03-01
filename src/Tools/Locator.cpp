@@ -22,12 +22,26 @@ Location Locator::locate() {
 	while (maxParticle->getBelief() < 100) {
 		count++;
 		LocationDelta delta = robot->move();
-
 		updatAllParticles(robot->getLidarScan(), delta);
 		drawMap();
 		maxParticle = this->getMaxBeliefParticle();
 	}
 	return *(maxParticle->getLoc());
+}
+
+void Locator::updatAllParticles(HamsterAPI::LidarScan lidarScan, LocationDelta delta)
+{
+	vector<Particle*>::iterator itr = this->particles.begin();
+	while (itr != this->particles.end()) {
+			(*itr)->update(lidarScan,delta);
+			double bel = (*itr)->getBelief();
+			if (bel<0.3)
+				particles.erase(itr);
+			if (bel>0.7)
+				createSons(*itr,30,3);
+
+			itr++;
+		}
 }
 
 void Locator::drawMap() {
@@ -90,14 +104,41 @@ void Locator::spreadParticles() {
 
 }
 
+void Locator::createSons(Particle *father ,int count ,int radius)
+{
+	time_t t;
+	int x,y;
+	double yaw;
+	/* Intializes random number generator */
+	srand((unsigned) time(&t));
+
+	for (int i = 0; i < count; i++) {
+		do{
+			x = rand() % radius;
+			y = rand() % radius;
+			int factor1 =  rand() % 2;
+			int factor2 = rand() % 2;
+			if (factor1 == 0)
+				x += father->getLoc()->getX();
+			else
+				x -= father->getLoc()->getX();
+			if (factor2 == 0)
+					y += father->getLoc()->getY();
+				else
+					y -= father->getLoc()->getY();
+			yaw = rand() % 360;
+		}while(map.getCell(x,y) != HamsterAPI::CELL_FREE);
+
+		particles.push_back(new Particle(x, y, yaw, this->map));
+
+	}
+}
+
 Particle* Locator::getMaxBeliefParticle() {
 
 }
 
-void Locator::updatAllParticles(HamsterAPI::LidarScan lidarScan,
-		LocationDelta delta) {
 
-}
 
 Locator::~Locator() {
 	// TODO Auto-generated destructor stub

@@ -25,6 +25,7 @@ private:
 	LocationDelta* turnRight();
 	LocationDelta* moveBackwards();
 	void stopMoving();
+	float findMinDistance(int minRange, int maxRange);
 
 
 public:

@@ -4,7 +4,7 @@
  *  Created on: Feb 26, 2017
  *      Author: user
  */
-
+#define COLLISIONRANGE 0.5
 #include "RandomMovementPolicy.h"
 
 RandomMovementPolicy::RandomMovementPolicy(HamsterAPI::Hamster * hamster):MovementPolicy(hamster) {
@@ -16,7 +16,7 @@ LocationDelta RandomMovementPolicy::move(){
 
 	LocationDelta * delta;
 		if (this->hamster->isConnected()) {
-
+/*
 				if (isFrontFree())
 					delta = moveForward();
 				else {
@@ -31,7 +31,30 @@ LocationDelta RandomMovementPolicy::move(){
 						HamsterAPI::Log::i("Client", "I am stuck!");
 				}
 
+*/
 
+				float minDistanceRight,minDistanceLeft;
+
+				if (isFrontFree()) {
+					moveForward();
+				} else {
+					stopMoving();
+
+					minDistanceRight = findMinDistance(125, 145);
+					minDistanceLeft = findMinDistance(215, 235);
+					if (isLeftFree() || isRightFree()) {
+						if (minDistanceRight > minDistanceLeft) {
+							turnRight();
+						} else {
+							turnLeft();
+						}
+					} else if (isBackFree())
+						moveBackwards();
+					else
+						HamsterAPI::Log::i("Client", "I am stuck!");
+
+				}
+			}
 
 }
 		else
@@ -60,14 +83,19 @@ void RandomMovementPolicy::getScansBetween(double min, double max, std::vector<d
 bool RandomMovementPolicy::willCollide(std::vector<double> distances, int angle_from_center) {
 	HamsterAPI::LidarScan scan = this->hamster->getLidarScan();
 
-	int collisions = 0;
+		double collisionThresh = COLLISIONRANGE	;
+//TODO handle wide range
+		float frontDistance = distances[180];
+		size_t i = distances.size() / 2 - angle_from_center / 2;
+		for (; i < distances.size() / 2 + angle_from_center / 2; i++) {
+			//if (distances[i] < scan.getMaxRange() / 4.0)
+			//collisions++;
+			if (distances[i] < collisionThresh && frontDistance < 0.4) {
+				return true;
+			}
+		}
+		return false;
 
-	for (size_t i = distances.size() / 2 - angle_from_center / 2;
-			i < distances.size() / 2 + angle_from_center / 2; i++)
-		if (distances[i] < scan.getMaxRange() / 4.0)
-			collisions++;
-
-	return collisions >= angle_from_center / 4.0;
 }
 
 bool RandomMovementPolicy::isFrontFree() {
@@ -112,8 +140,13 @@ bool RandomMovementPolicy::isBackFree() {
 }
 
 LocationDelta* RandomMovementPolicy::moveForward() {
+
+	float minDistance = findMinDistance(170, 190);
+	if (minDistance > 5.0) {
+		minDistance = 5.0;
+	}
 	HamsterAPI::Log::i("Client", "Moving Forward");
-	hamster->sendSpeed(0.4, 0.0);
+	hamster->sendSpeed(minDistance / 5.0, 0.0);
 }
 
 LocationDelta *RandomMovementPolicy::turnLeft() {
@@ -140,5 +173,18 @@ LocationDelta *RandomMovementPolicy::moveBackwards() {
 
 void RandomMovementPolicy::stopMoving() {
 	hamster->sendSpeed(0.0, 0.0);
+}
+
+float RandomMovementPolicy::findMinDistance(int minRange, int maxRange) {
+
+	HamsterAPI::LidarScan ld = hamster->getLidarScan();
+	float minDistance = 10;
+
+	for (int i = minRange; i < maxRange; i++) {
+		if (ld.getDistance(i) < minDistance) {
+			minDistance = ld.getDistance(i);
+		}
+	}
+	return minDistance;
 }
 

@@ -25,6 +25,8 @@ private:
 	HamsterAPI::OccupancyGrid map;
 	Robot * robot;
 	int startParticlesNum;
+	void createSons(Particle *father ,int count ,int radius);
+
 
 public:
 
