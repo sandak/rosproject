@@ -11,6 +11,7 @@ MovementPolicy::MovementPolicy(HamsterAPI::Hamster * hamster) {
 	this->hamster = hamster;
 }
 
+
 void MovementPolicy::setHamster(HamsterAPI::Hamster * hamster){
 	this->hamster = hamster;
 }

@@ -7,6 +7,7 @@
 
 #include "Locator.h"
 
+
 Locator::Locator(Robot* robot) {
 	this->robot = robot;
 	this->startParticlesNum = 300;
@@ -32,13 +33,13 @@ Location Locator::locate(){
 void Locator::drawMap(){
 	cv::Mat_<cv::Vec3b>* m =new cv::Mat_<cv::Vec3b>(this->map.getHeight(),this->map.getWidth());
 	vector<Particle*>::iterator itr  = this->particles.begin();
+	uint32_t i,j;
 
-
-	for (int i=0;i<this->map.getHeight();i++)
+	for (i=0;i<this->map.getHeight();i++)
 	{
-		for (int j=0;j<this->map.getWidth();j++)
+		for (j=0;j<this->map.getWidth();j++)
 		{
-			if (map.getCell(j, i) == HamsterAPI::CELL_OCCUPIED)
+			if (map.getCell(j,i) == HamsterAPI::CELL_OCCUPIED)
 			{
 			m->at<cv::Vec3b>(i,j).val[0]=0;
 			m->at<cv::Vec3b>(i,j).val[1]=0;
@@ -81,6 +82,14 @@ void Locator::spreadParticles(){
 
 	}
 
+
+}
+
+Particle* Locator::getMaxBeliefParticle(){
+
+}
+
+void Locator::updatAllParticles(HamsterAPI::LidarScan lidarScan , LocationDelta delta){
 
 }
 
