@@ -8,23 +8,28 @@
 #ifndef SRC_ROBOT_H_
 #define SRC_ROBOT_H_
 #include <HamsterAPIClientCPP/Hamster.h>
+#include <ctime>
 #include "MovementPolicy.h"
 #include "../Entities/LocationDelta.h"
+#include "LastCommand.h"
 
+class MovementPolicy;
 class Robot {
 private:
 	Location loc;
 	HamsterAPI::Hamster * hamster;
 	MovementPolicy * movementPolicy;
+	//last command parameters
+	struct LastCommand lastCommand;
 
 public:
-	LocationDelta updatePose();
+	LocationDelta updatePose(struct LastCommand newCommand);
 	Robot(HamsterAPI::Hamster * hamster,MovementPolicy * movementPolicy);
 	LocationDelta move();
 
 	HamsterAPI::LidarScan getLidarScan();
 	HamsterAPI::OccupancyGrid getOccupancyGridMap();
-
+	HamsterAPI::Hamster * getHamster();
 	virtual ~Robot();
 };
 

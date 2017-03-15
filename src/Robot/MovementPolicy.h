@@ -7,21 +7,22 @@
 
 #ifndef SRC_MOVEMENTPOLICY_H_
 #define SRC_MOVEMENTPOLICY_H_
-//#include "Robot.h"
-#include <HamsterAPIClientCPP/Hamster.h>
+//#include <HamsterAPIClientCPP/Hamster.h>
 #include "../Entities/LocationDelta.h"
+#include "Robot.h"
 
+class Robot;
 class MovementPolicy {
 protected:
 
-	HamsterAPI::Hamster *hamster;
+	Robot * robot;
 
 public:
 
-	MovementPolicy(HamsterAPI::Hamster * hamster);
-	void setHamster(HamsterAPI::Hamster* hamster);
+	MovementPolicy();
+	void setRobot(Robot * robot);
 
-	virtual LocationDelta move() = 0;
+	virtual struct LastCommand move() = 0;
 	virtual ~MovementPolicy();
 };
 

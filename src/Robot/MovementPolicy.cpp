@@ -7,13 +7,13 @@
 
 #include "MovementPolicy.h"
 
-MovementPolicy::MovementPolicy(HamsterAPI::Hamster * hamster) {
-	this->hamster = hamster;
+MovementPolicy::MovementPolicy() {
+	this->robot = NULL;
 }
 
 
-void MovementPolicy::setHamster(HamsterAPI::Hamster * hamster){
-	this->hamster = hamster;
+void MovementPolicy::setRobot(Robot* robot){
+	this->robot = robot;
 }
 
 MovementPolicy::~MovementPolicy() {

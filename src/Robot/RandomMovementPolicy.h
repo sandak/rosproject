@@ -20,18 +20,18 @@ private:
 	bool isLeftFree();
 	bool isRightFree();
 	bool isBackFree();
-	LocationDelta* moveForward();
-	LocationDelta* turnLeft();
-	LocationDelta* turnRight();
-	LocationDelta* moveBackwards();
-	void stopMoving();
+	struct LastCommand moveForward();
+	struct LastCommand turnLeft();
+	struct LastCommand turnRight();
+	struct LastCommand moveBackwards();
+	struct LastCommand stopMoving();
 	float findMinDistance(int minRange, int maxRange);
 
 
 public:
 
-	virtual LocationDelta move();
-	RandomMovementPolicy(HamsterAPI::Hamster * hamster);
+	virtual struct LastCommand move();
+	RandomMovementPolicy();
 
 	virtual ~RandomMovementPolicy();
 };

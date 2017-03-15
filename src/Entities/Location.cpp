@@ -18,20 +18,24 @@ Location::Location()
 	this->y = 0;
 	this->yaw = 0;
 }
+
 Location Location::operator +(Location delta)
 {
 	this->setX(this->getX()+delta.getX());
 	this->setY(this->getY()+delta.getY());
-	this->setYaw(delta.getYaw());
+	this->setYaw(delta.getYaw()+this->getYaw());
+	//this->setYaw(delta.getYaw());
 	return *this;
 }
 
 int Location::getX(){
 	return this->x;
 }
+
 int Location::getY(){
 	return this->y;
 }
+
 float Location::getYaw(){
 	return this->yaw;
 }
@@ -43,6 +47,7 @@ void Location::setX(int x){
 void Location::setY(int y){
 	this->y=y;
 }
+
 void Location::setYaw(float yaw){
 	this->yaw = yaw;
 }

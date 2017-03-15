@@ -7,69 +7,68 @@
 #define COLLISIONRANGE 0.5
 #include "RandomMovementPolicy.h"
 
-RandomMovementPolicy::RandomMovementPolicy(HamsterAPI::Hamster * hamster):MovementPolicy(hamster) {
+RandomMovementPolicy::RandomMovementPolicy() {
 	// TODO Auto-generated constructor stub
 
 }
 
-LocationDelta RandomMovementPolicy::move(){
+struct LastCommand RandomMovementPolicy::move() {
 
-	LocationDelta * delta;
-		if (this->hamster->isConnected()) {
-/*
-				if (isFrontFree())
-					delta = moveForward();
-				else {
-					stopMoving();
-					if (isLeftFree())
-						delta = turnLeft();
-					else if (isRightFree())
-						delta = turnRight();
-					else if (isBackFree())
-						delta = moveBackwards();
-					else
-						HamsterAPI::Log::i("Client", "I am stuck!");
-				}
+	struct LastCommand lastCommand;
+	if (this->robot != NULL) {
+		if (this->robot->getHamster()->isConnected()) {
+			/*
+			 if (isFrontFree())
+			 delta = moveForward();
+			 else {
+			 stopMoving();
+			 if (isLeftFree())
+			 delta = turnLeft();
+			 else if (isRightFree())
+			 delta = turnRight();
+			 else if (isBackFree())
+			 delta = moveBackwards();
+			 else
+			 HamsterAPI::Log::i("Client", "I am stuck!");
+			 }
 
-*/
+			 */
 
-				float minDistanceRight,minDistanceLeft;
+			float minDistanceRight, minDistanceLeft;
 
-				if (isFrontFree()) {
-					moveForward();
-				} else {
-					stopMoving();
+			if (isFrontFree()) {
+				lastCommand = moveForward();
+			} else {
+				stopMoving();
 
-					minDistanceRight = findMinDistance(125, 145);
-					minDistanceLeft = findMinDistance(215, 235);
-					if (isLeftFree() || isRightFree()) {
-						if (minDistanceRight > minDistanceLeft) {
-							turnRight();
-						} else {
-							turnLeft();
-						}
-					} else if (isBackFree())
-						moveBackwards();
-					else
-						HamsterAPI::Log::i("Client", "I am stuck!");
+				minDistanceRight = findMinDistance(125, 145);
+				minDistanceLeft = findMinDistance(215, 235);
+				if (isLeftFree() || isRightFree()) {
+					if (minDistanceRight > minDistanceLeft) {
+						lastCommand = turnRight();
+					} else {
+						lastCommand = turnLeft();
+					}
+				} else if (isBackFree())
+					lastCommand = moveBackwards();
+				else
+					HamsterAPI::Log::i("Client", "I am stuck!");
 
-				}
 			}
-		else
-		{
+		} else {
 			//TODO what if not connected?
 		}
-		return *delta;
+	}
+	return lastCommand;
 }
-
 
 RandomMovementPolicy::~RandomMovementPolicy() {
 	// TODO Auto-generated destructor stub
 }
 
-
-void RandomMovementPolicy::getScansBetween(double min, double max, std::vector<double> & distances) {
-	HamsterAPI::LidarScan scan = hamster->getLidarScan();
+void RandomMovementPolicy::getScansBetween(double min, double max,
+		std::vector<double> & distances) {
+	HamsterAPI::LidarScan scan = this->robot->getHamster()->getLidarScan();
 
 	for (size_t i = 0; i < scan.getScanSize(); i++) {
 		double degree = scan.getScanAngleIncrement() * i;
@@ -78,21 +77,22 @@ void RandomMovementPolicy::getScansBetween(double min, double max, std::vector<d
 	}
 }
 
-bool RandomMovementPolicy::willCollide(std::vector<double> distances, int angle_from_center) {
-	HamsterAPI::LidarScan scan = this->hamster->getLidarScan();
+bool RandomMovementPolicy::willCollide(std::vector<double> distances,
+		int angle_from_center) {
+	HamsterAPI::LidarScan scan = this->robot->getHamster()->getLidarScan();
 
-		double collisionThresh = COLLISIONRANGE	;
+	double collisionThresh = COLLISIONRANGE;
 //TODO handle wide range
-		float frontDistance = distances[180];
-		size_t i = distances.size() / 2 - angle_from_center / 2;
-		for (; i < distances.size() / 2 + angle_from_center / 2; i++) {
-			//if (distances[i] < scan.getMaxRange() / 4.0)
-			//collisions++;
-			if (distances[i] < collisionThresh && frontDistance < 0.4) {
-				return true;
-			}
+	float frontDistance = distances[180];
+	size_t i = distances.size() / 2 - angle_from_center / 2;
+	for (; i < distances.size() / 2 + angle_from_center / 2; i++) {
+		//if (distances[i] < scan.getMaxRange() / 4.0)
+		//collisions++;
+		if (distances[i] < collisionThresh && frontDistance < 0.4) {
+			return true;
 		}
-		return false;
+	}
+	return false;
 
 }
 
@@ -137,47 +137,86 @@ bool RandomMovementPolicy::isBackFree() {
 	return !willCollide(distances, 40);
 }
 
-LocationDelta* RandomMovementPolicy::moveForward() {
+struct LastCommand RandomMovementPolicy::moveForward() {
 
+	struct LastCommand retVal;
 	float minDistance = findMinDistance(170, 190);
 	if (minDistance > 5.0) {
 		minDistance = 5.0;
 
 	}
 	HamsterAPI::Log::i("Client", "Moving Forward");
-	hamster->sendSpeed(minDistance / 5.0, 0.0);
+	this->robot->getHamster()->sendSpeed(minDistance / 5.0, 0.0);
 
+	retVal.speed = minDistance / 5.0;
+	retVal.angle = 0;
+	time(&(retVal.time));
+
+	return retVal;
 }
 
-LocationDelta *RandomMovementPolicy::turnLeft() {
+struct LastCommand RandomMovementPolicy::turnLeft() {
+	struct LastCommand retVal;
+
 	HamsterAPI::Log::i("Client", "Turning Left");
 	while (!isFrontFree())
-		hamster->sendSpeed(0.04, 45.0);
+		this->robot->getHamster()->sendSpeed(0.04, 45.0);
+
+	retVal.speed = 0.04;
+	retVal.angle = 45;
+	time(&(retVal.time));
+
+	return retVal;
+
 }
 
-LocationDelta* RandomMovementPolicy::turnRight() {
+struct LastCommand RandomMovementPolicy::turnRight() {
+
+	struct LastCommand retVal;
 	HamsterAPI::Log::i("Client", "Turning Right");
 	while (!isFrontFree())
-		hamster->sendSpeed(0.04, -45.0);
+		this->robot->getHamster()->sendSpeed(0.04, -45.0);
+
+	retVal.speed = 0.04;
+	retVal.angle = -45.0;
+	time(&(retVal.time));
+
+	return retVal;
 }
 
-LocationDelta *RandomMovementPolicy::moveBackwards() {
+struct LastCommand RandomMovementPolicy::moveBackwards() {
+	struct LastCommand retVal;
+
 	HamsterAPI::Log::i("Client", "Moving Backwards");
-	while (!isLeftFree() && !isRightFree() && isBackFree())
-		hamster->sendSpeed(-0.4, 0.0);
+	while (!isLeftFree() && !isRightFree() && isBackFree()) {
+		this->robot->getHamster()->sendSpeed(-0.4, 0.0);
+		retVal.speed = -0.4;
+		retVal.angle = 0.0;
+		time(&(retVal.time));
+	}
 	if (isLeftFree())
-		turnLeft();
+		retVal = turnLeft();
 	else
-		turnRight();
+		retVal = turnRight();
+
+	return retVal;
 }
 
-void RandomMovementPolicy::stopMoving() {
-	hamster->sendSpeed(0.0, 0.0);
+struct LastCommand RandomMovementPolicy::stopMoving() {
+	struct LastCommand retVal;
+
+	this->robot->getHamster()->sendSpeed(0.0, 0.0);
+
+	retVal.speed = 0.0;
+	retVal.angle = 0.0;
+	time(&(retVal.time));
+
+	return retVal;
 }
 
 float RandomMovementPolicy::findMinDistance(int minRange, int maxRange) {
 
-	HamsterAPI::LidarScan ld = hamster->getLidarScan();
+	HamsterAPI::LidarScan ld = this->robot->getHamster()->getLidarScan();
 	float minDistance = 10;
 
 	for (int i = minRange; i < maxRange; i++) {

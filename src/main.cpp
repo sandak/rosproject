@@ -13,8 +13,9 @@ int main(){
 	try {
 			hamster = new HamsterAPI::Hamster(1);
 			sleep(1);
-			RandomMovementPolicy * policy = new RandomMovementPolicy(hamster);
+			RandomMovementPolicy * policy = new RandomMovementPolicy();
 			Robot * robot = new Robot(hamster,policy);
+			policy->setRobot(robot);
 			Locator * locator = new Locator(robot);
 
 			while (hamster->isConnected()) {

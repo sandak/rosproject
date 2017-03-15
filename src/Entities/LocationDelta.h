@@ -7,12 +7,13 @@
 
 #ifndef SRC_LOCATIONDELTA_H_
 #define SRC_LOCATIONDELTA_H_
-
 #include "Location.h"
 
 class LocationDelta: public Location {
 
+
 public:
+
 	LocationDelta(int x, int y, float yaw);
 	virtual ~LocationDelta();
 };
