@@ -1,12 +1,14 @@
 /*
  * Robot.cpp
+
  *
  *  Created on: Feb 26, 2017
  *      Author: user
  */
-
+#include <iostream>
 #include "Robot.h"
 #define PI 3.14159265359
+using namespace std;
 
 
 Robot::Robot(HamsterAPI::Hamster * hamster,MovementPolicy * movementPolicy) {
@@ -16,6 +18,10 @@ Robot::Robot(HamsterAPI::Hamster * hamster,MovementPolicy * movementPolicy) {
 	this->loc.setX(hamster->getPose().getX());
 	this->loc.setY(hamster->getPose().getY());
 	this->loc.setYaw((hamster->getPose().getHeading()));
+
+	time(&this->lastCommand.time);
+	this->lastCommand.speed = 0;
+	this->lastCommand.angle = 0;
 }
 
 

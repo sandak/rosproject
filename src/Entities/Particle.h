@@ -17,8 +17,8 @@ private:
 	double belief;
 	double probByMove(LocationDelta delta);
 	double probScanMatch(HamsterAPI::LidarScan lidar);
-	Location calcPos(int angle, int distance);
 public:
+	Location calcPos(int angle, int distance);
 
 
 	HamsterAPI::OccupancyGrid map;

@@ -19,11 +19,16 @@ Location Locator::locate() {
 	spreadParticles();
 	int count = 0;
 	Particle* maxParticle = getMaxBeliefParticle();
+
 	while (maxParticle->getBelief() < 100) {
+		//cout<<maxParticle->getBelief()<<endl;
 		count++;
 		LocationDelta delta = robot->move();
+		cout<<"move end"<<endl;
 		updatAllParticles(robot->getLidarScan(), delta);
+		cout<<"update end"<<endl;
 		drawMap();
+		cout<<"draw end"<<endl;
 		maxParticle = this->getMaxBeliefParticle();
 	}
 	return *(maxParticle->getLoc());
@@ -31,16 +36,30 @@ Location Locator::locate() {
 
 void Locator::updatAllParticles(HamsterAPI::LidarScan lidarScan, LocationDelta delta)
 {
+	cout<<" enter update all"<<endl;
+
 	vector<Particle*>::iterator itr = this->particles.begin();
 	while (itr != this->particles.end()) {
+		try{
 			(*itr)->update(lidarScan,delta);
-			double bel = (*itr)->getBelief();
-			if (bel<0.3)
-				particles.erase(itr);
-			if (bel>0.7)
-				createSons(*itr,30,3);
 
+			double bel = (*itr)->getBelief();
+
+			cout<<bel<<endl;
+			if (bel<0.3)
+			{
+				cout<<"before single delete"<<endl;
+				particles.erase(itr);
+			}
+			if (bel>0.7)
+			{	cout<<"before single create"<<endl;
+				createSons(*itr,30,3);
+			}
 			itr++;
+			}catch(const std::exception& e){
+				cout << e.what() << endl;
+			}
+
 		}
 }
 
@@ -71,16 +90,21 @@ void Locator::drawMap() {
 	while (itr != this->particles.end()) {
 		int x = (*itr)->getLoc()->getX();
 		int y = (*itr)->getLoc()->getY();
-
+		int mapH = map.getHeight();
+		int mapW = map.getWidth();
+		if ( y<mapH && y>0 && x<mapW && x>0)
+		{
 		m->at<cv::Vec3b>(y, x).val[0] = 0;
 		m->at<cv::Vec3b>(y, x).val[1] = 0;
 		m->at<cv::Vec3b>(y, x).val[2] = 255;
-
+		}
 		itr++;
 	}
 
 	cv::imshow("locating", *m);
 	cv::waitKey(1);
+	int tmp;
+	cout << "end draw func" <<endl;
 }
 
 void Locator::spreadParticles() {
@@ -136,6 +160,20 @@ void Locator::createSons(Particle *father ,int count ,int radius)
 
 Particle* Locator::getMaxBeliefParticle() {
 
+	vector<Particle*>::iterator itr = this->particles.begin();
+	double maxBelief = -1 ;
+	Particle * maxParticle;
+	while (itr != this->particles.end()) {
+
+			if((*itr)->getBelief() > maxBelief){
+				maxParticle = *(itr);
+				maxBelief = (*itr)->getBelief();
+			}
+
+
+			itr++;
+		}
+	return maxParticle;
 }
 
 
