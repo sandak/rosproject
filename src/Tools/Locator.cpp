@@ -101,12 +101,24 @@ void Locator::drawMap() {
 		itr++;
 	}
 
+	drawRobot(m);
 	cv::imshow("locating", *m);
 	cv::waitKey(1);
 	int tmp;
 	cout << "end draw func" <<endl;
 }
 
+void Locator::drawRobot(cv::Mat_<cv::Vec3b> * m)
+{
+	float robot_x,robot_y,robot_heading;
+	robot_x = robot->getHamster()->getPose().getX() + ((*m).cols)/2;
+	robot_y = robot->getHamster()->getPose().getY() + ((*m).rows)/2;
+	robot_heading = robot->getHamster()->getPose().getHeading();
+	cv::Scalar_<int> *color = new cv::Scalar_<int>(255,0,0);
+	cv::Point_<float>* position = new cv::Point_<float>(robot_x,robot_y);
+
+	cv::circle(*m,*position,3,*color,1,8,0);
+}
 void Locator::spreadParticles() {
 
 	time_t t;
