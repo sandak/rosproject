@@ -9,7 +9,7 @@
 
 Locator::Locator(Robot* robot) {
 	this->robot = robot;
-	this->startParticlesNum = 300;
+	this->startParticlesNum = INIT_PARTICLES_AMOUNT;
 	this->map = robot->getOccupancyGridMap();
 }
 
@@ -24,11 +24,11 @@ Location Locator::locate() {
 		//cout<<maxParticle->getBelief()<<endl;
 		count++;
 		LocationDelta delta = robot->move();
-		cout << "move end" << endl;
+		//cout << "move end" << endl;
 		updatAllParticles(robot->getLidarScan(), delta);
-		cout << "update end" << endl;
+		//cout << "update end" << endl;
 		drawMap();
-		cout << "draw end" << endl;
+		//cout << "draw end" << endl;
 		maxParticle = this->getMaxBeliefParticle();
 	}
 	return *(maxParticle->getLoc());
@@ -36,7 +36,7 @@ Location Locator::locate() {
 
 void Locator::updatAllParticles(HamsterAPI::LidarScan lidarScan,
 		LocationDelta delta) {
-	cout << " enter update all" << endl;
+	//cout << " enter update all" << endl;
 
 	vector<Particle*>::iterator itr = this->particles.begin();
 	while (itr != this->particles.end()) {
@@ -45,13 +45,13 @@ void Locator::updatAllParticles(HamsterAPI::LidarScan lidarScan,
 
 			double bel = (*itr)->getBelief();
 
-			cout << bel << endl;
+			//cout << bel << endl;
 			if (bel < 0.3) {
-				cout << "before single delete" << endl;
+				//cout << "before single delete" << endl;
 				particles.erase(itr);
 			}
 			if (bel > 0.7) {
-				cout << "before single create" << endl;
+				//cout << "before single create" << endl;
 				createSons(*itr, 30, 3);
 			}
 			itr++;
@@ -68,7 +68,7 @@ void Locator::drawMap() {
 			this->map.getWidth());
 	vector<Particle*>::iterator itr = this->particles.begin();
 	u_int i, j;
-	cout << "draw func" << endl;
+	//cout << "draw func" << endl;
 	for (i = 0; i < this->map.getHeight(); i++) {
 		for (j = 0; j < this->map.getWidth(); j++) {
 			if (map.getCell(i, j) == HamsterAPI::CELL_OCCUPIED) {
@@ -90,12 +90,19 @@ void Locator::drawMap() {
 	while (itr != this->particles.end()) {
 		int x = (*itr)->getLoc()->getX();
 		int y = (*itr)->getLoc()->getY();
+		int yaw = (*itr)->getLoc()->getYaw();
+		int x_end,y_end;
 		int mapH = map.getHeight();
 		int mapW = map.getWidth();
 		if (y < mapH && y > 0 && x < mapW && x > 0) {
-			m->at<cv::Vec3b>(y, x).val[0] = 0;
-			m->at<cv::Vec3b>(y, x).val[1] = 0;
-			m->at<cv::Vec3b>(y, x).val[2] = 255;
+
+			cv::Scalar_<double> *color = new cv::Scalar_<double>(0, 0, 255);
+			cv::Point_<int>* start = new cv::Point_<int>(x, y);
+			x_end = x + (std::cos(yaw));
+			y_end = y + (std::sin(yaw));
+			cv::Point_<int>* end = new cv::Point_<int>(x_end , y_end);
+
+			cv::circle(*m, *start, 3, *color, 1, 8, 0);
 		}
 		itr++;
 	}
@@ -104,8 +111,8 @@ void Locator::drawMap() {
 
 	cv::imshow("locating", *m);
 	cv::waitKey(1);
-	int tmp;
-	cout << "end draw func" << endl;
+
+	//cout << "end draw func" << endl;
 }
 
 void Locator::drawEntity(Entity entity) {

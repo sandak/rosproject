@@ -50,11 +50,11 @@ LocationDelta Robot::updatePose(struct LastCommand newCommand)
 {
 
 	struct LocationDelta delta;
-	//todo fix time calc
+
 	float t = newCommand.time - this->lastCommand.time;
 
 	delta.distance = newCommand.speed*t;
-	delta.angle = 90-lastCommand.angle;
+	delta.angle = lastCommand.angle;
 
 	this->loc.updateLocation(delta);
 

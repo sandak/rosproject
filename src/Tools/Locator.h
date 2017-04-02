@@ -14,7 +14,7 @@
 #include "../Entities/Location.h"
 #include "../Entities/Particle.h"
 #include "../Robot/Robot.h"
-
+#include "../properties.h"
 
 
 

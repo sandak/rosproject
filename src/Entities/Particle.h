@@ -7,11 +7,14 @@
 
 #ifndef SRC_PARTICLE_H_
 #define SRC_PARTICLE_H_
+#include <iostream>
+
 #include "Location.h"
 #include <HamsterAPIClientCPP/Hamster.h>
 #include "LocationDelta.h"
 #include "Entity.h"
 #include "../properties.h"
+
 
 class Particle: public Entity {
 private:

@@ -17,22 +17,6 @@ struct LastCommand RandomMovementPolicy::move() {
 	struct LastCommand lastCommand;
 	if (this->robot != NULL) {
 		if (this->robot->getHamster()->isConnected()) {
-			/*
-			 if (isFrontFree())
-			 delta = moveForward();
-			 else {
-			 stopMoving();
-			 if (isLeftFree())
-			 delta = turnLeft();
-			 else if (isRightFree())
-			 delta = turnRight();
-			 else if (isBackFree())
-			 delta = moveBackwards();
-			 else
-			 HamsterAPI::Log::i("Client", "I am stuck!");
-			 }
-
-			 */
 
 			float minDistanceRight, minDistanceLeft;
 
@@ -145,7 +129,7 @@ struct LastCommand RandomMovementPolicy::moveForward() {
 		minDistance = 5.0;
 
 	}
-	HamsterAPI::Log::i("Client", "Moving Forward");
+	//HamsterAPI::Log::i("Client", "Moving Forward");
 	this->robot->getHamster()->sendSpeed(minDistance / 5.0, 0.0);
 
 	retVal.speed = minDistance / 5.0;
@@ -158,7 +142,7 @@ struct LastCommand RandomMovementPolicy::moveForward() {
 struct LastCommand RandomMovementPolicy::turnLeft() {
 	struct LastCommand retVal;
 
-	HamsterAPI::Log::i("Client", "Turning Left");
+	//HamsterAPI::Log::i("Client", "Turning Left");
 	while (!isFrontFree())
 		this->robot->getHamster()->sendSpeed(0.04, 45.0);
 
@@ -173,7 +157,7 @@ struct LastCommand RandomMovementPolicy::turnLeft() {
 struct LastCommand RandomMovementPolicy::turnRight() {
 
 	struct LastCommand retVal;
-	HamsterAPI::Log::i("Client", "Turning Right");
+	//HamsterAPI::Log::i("Client", "Turning Right");
 	while (!isFrontFree())
 		this->robot->getHamster()->sendSpeed(0.04, -45.0);
 
@@ -187,7 +171,7 @@ struct LastCommand RandomMovementPolicy::turnRight() {
 struct LastCommand RandomMovementPolicy::moveBackwards() {
 	struct LastCommand retVal;
 
-	HamsterAPI::Log::i("Client", "Moving Backwards");
+	//HamsterAPI::Log::i("Client", "Moving Backwards");
 	while (!isLeftFree() && !isRightFree() && isBackFree()) {
 		this->robot->getHamster()->sendSpeed(-0.4, 0.0);
 		retVal.speed = -0.4;

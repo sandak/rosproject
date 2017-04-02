@@ -10,6 +10,7 @@
 
 
 #define PI 3.14159265359
-
+#define INIT_PARTICLES_AMOUNT 1
+#define BELIEF_FACTOR 1.2
 
 #endif /* PROPERTIES_H_ */

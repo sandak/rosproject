@@ -4,7 +4,7 @@
 #include "Robot/RandomMovementPolicy.h"
 #include "Robot/Robot.h"
 #include "Tools/Locator.h"
-
+#include <ctime>
 using namespace std;
 
 int main(){
