@@ -20,9 +20,9 @@ Location::Location()
 }
 
 void Location::updateLocation(struct LocationDelta delta){
-		setX(delta.distance*cos(((this->getYaw() + delta.angle)%360)*PI/180));
-		setY(delta.distance*sin(((this->getYaw() + delta.angle)%360)*PI/180));
-		setYaw(delta.angle);
+		setX(getX() + delta.distance*cos(((this->getYaw() + delta.angle)%360)*PI/180));
+		setY(getY() + delta.distance*sin(((this->getYaw() + delta.angle)%360)*PI/180));
+		setYaw((getYaw() + delta.angle - 90)%360);
 }
 
 Location Location::operator +(Location delta)

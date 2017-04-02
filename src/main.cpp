@@ -8,6 +8,7 @@
 using namespace std;
 
 int main(){
+
 	HamsterAPI::Hamster* hamster;
 
 	try {
