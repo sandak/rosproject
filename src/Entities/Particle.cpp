@@ -4,12 +4,12 @@
  *  Created on: Feb 26, 2017
  *      Author: user
  */
-#define PI 3.14159265359
+
 #include "Particle.h"
 
 Particle::Particle(int x, int y, int yaw, HamsterAPI::OccupancyGrid map) {
 
-	this->loc = new LocationDelta(x, y, yaw);
+	this->loc = new Location(x,y,yaw);
 	this->map = map;
 	this->belief = 0.5;
 
@@ -24,9 +24,8 @@ double Particle::getBelief() {
 }
 
 void Particle::update(HamsterAPI::LidarScan lidar, LocationDelta delta) {
-	this->loc->setX(this->loc->getX() + delta.getX());
-	this->loc->setY(this->loc->getY() + delta.getY());
-	this->loc->setYaw(this->loc->getYaw() + delta.getYaw());
+	this->loc->updateLocation(delta);
+
 	double n_factor = 1.2;
 	//this->belief = n_factor*this->getBelief()*probByMove(delta)*probScanMatch(lidar);
 
@@ -63,7 +62,6 @@ Location Particle::calcPos(int angle, int distance) {
 	//angleDeg = i*(-1)+270;
 	angleDeg = angle;
 	angleRad = angleDeg * PI;
-	;
 	angleRad = angleRad / 180;
 
 	norm = (distance) * (double) 100;

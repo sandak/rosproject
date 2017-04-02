@@ -10,7 +10,10 @@
 #include "Location.h"
 #include <HamsterAPIClientCPP/Hamster.h>
 #include "LocationDelta.h"
-class Particle {
+#include "Entity.h"
+#include "../properties.h"
+
+class Particle: public Entity {
 private:
 
 	Location* loc;

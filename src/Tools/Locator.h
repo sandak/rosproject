@@ -10,6 +10,7 @@
 #include <vector>
 #include <iterator>
 #include <HamsterAPIClientCPP/Hamster.h>
+#include "../Entities/Entity.h"
 #include "../Entities/Location.h"
 #include "../Entities/Particle.h"
 #include "../Robot/Robot.h"
@@ -27,7 +28,7 @@ private:
 	int startParticlesNum;
 	void createSons(Particle *father ,int count ,int radius);
 	void drawRobot(cv::Mat_<cv::Vec3b>* m);
-
+	void drawEntity(Entity entity);
 public:
 
 

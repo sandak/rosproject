@@ -9,13 +9,10 @@
 #define SRC_LOCATIONDELTA_H_
 #include "Location.h"
 
-class LocationDelta: public Location {
+struct LocationDelta{
+	int angle;
+	double distance;
 
-
-public:
-
-	LocationDelta(int x, int y, float yaw);
-	virtual ~LocationDelta();
 };
 
 #endif /* SRC_LOCATIONDELTA_H_ */

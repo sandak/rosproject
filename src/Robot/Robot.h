@@ -9,12 +9,14 @@
 #define SRC_ROBOT_H_
 #include <HamsterAPIClientCPP/Hamster.h>
 #include <ctime>
+#include "../Entities/Entity.h"
 #include "MovementPolicy.h"
 #include "../Entities/LocationDelta.h"
 #include "LastCommand.h"
 
+
 class MovementPolicy;
-class Robot {
+class Robot: public Entity{
 private:
 	Location loc;
 	HamsterAPI::Hamster * hamster;

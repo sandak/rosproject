@@ -108,6 +108,12 @@ void Locator::drawMap() {
 	cout << "end draw func" << endl;
 }
 
+void Locator::drawEntity(Entity entity) {
+	int x = entity.getX();
+	int y = entity.getY();
+	float yaw = entity.getYaw();
+}
+
 void Locator::drawRobot(cv::Mat_<cv::Vec3b> * m) {
 	float robot_x, robot_y, robot_heading;
 	robot_x = robot->getHamster()->getPose().getX() + ((*m).cols) / 2;

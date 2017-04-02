@@ -8,23 +8,28 @@
 #ifndef SRC_LOCATION_H_
 #define SRC_LOCATION_H_
 
+#include <cmath>
+#include "LocationDelta.h"
+#include "../properties.h"
+
 class Location {
 private:
 	int x,y;
-	float yaw;
+	int yaw;
 public:
 
-	Location(int x, int y, float yaw);
+	Location(int x, int y, int yaw);
 	Location();
 
 	Location operator+(Location delta);
 	int getX();
 	int getY();
-	float getYaw();
+	int getYaw();
 	void setX(int x);
 	void setY(int y);
-	void setYaw(float yaw);
+	void setYaw(int yaw);
 
+	void updateLocation(struct LocationDelta delta);
 
 	virtual ~Location();
 };

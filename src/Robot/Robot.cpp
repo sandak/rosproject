@@ -7,7 +7,7 @@
  */
 #include <iostream>
 #include "Robot.h"
-#define PI 3.14159265359
+
 using namespace std;
 
 
@@ -49,15 +49,14 @@ HamsterAPI::Hamster* Robot::getHamster(){
 LocationDelta Robot::updatePose(struct LastCommand newCommand)
 {
 
-	LocationDelta delta(0,0,0);
+	struct LocationDelta delta;
 	//todo fix time calc
 	float t = newCommand.time - this->lastCommand.time;
-	float distance = newCommand.speed*t;
-	delta.setX(distance*cos((90-lastCommand.angle)*PI/180));
-	delta.setY(distance*sin((90-lastCommand.angle)*PI/180));
-	delta.setYaw(lastCommand.angle);
 
-	this->loc = this->loc + delta;
+	delta.distance = newCommand.speed*t;
+	delta.angle = 90-lastCommand.angle;
+
+	this->loc.updateLocation(delta);
 
 	return delta;
 }
