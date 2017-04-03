@@ -28,6 +28,7 @@ Robot::Robot(HamsterAPI::Hamster * hamster,MovementPolicy * movementPolicy) {
 LocationDelta Robot::move(){
 	struct LastCommand newCommand;
 	newCommand = movementPolicy->move();
+
 	return this->updatePose(newCommand);
 }
 

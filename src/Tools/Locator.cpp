@@ -63,12 +63,12 @@ void Locator::updatAllParticles(HamsterAPI::LidarScan lidarScan,
 }
 
 void Locator::drawMap() {
-
+	//cout << "draw func" << endl;
 	cv::Mat_<cv::Vec3b>* m = new cv::Mat_<cv::Vec3b>(this->map.getHeight(),
 			this->map.getWidth());
 	vector<Particle*>::iterator itr = this->particles.begin();
 	u_int i, j;
-	//cout << "draw func" << endl;
+
 	for (i = 0; i < this->map.getHeight(); i++) {
 		for (j = 0; j < this->map.getWidth(); j++) {
 			if (map.getCell(i, j) == HamsterAPI::CELL_OCCUPIED) {

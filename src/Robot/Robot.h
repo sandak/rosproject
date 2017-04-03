@@ -13,6 +13,7 @@
 #include "MovementPolicy.h"
 #include "../Entities/LocationDelta.h"
 #include "LastCommand.h"
+#include "../properties.h"
 
 
 class MovementPolicy;
