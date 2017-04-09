@@ -6,6 +6,7 @@
  */
 
 #include "Location.h"
+#include <iostream>
 
 Location::Location(float x, float y , int yaw) {
 	this->x = x;
@@ -21,13 +22,14 @@ Location::Location()
 
 void Location::updateLocation(struct LocationDelta delta){
 
+	std::cout << "delta angle : "<<delta.angle << std::endl;
 		int oldYaw = getYaw();
 		float oldX = getX();
 		float oldY = getY();
 		int newYaw = delta.angle;
-		float newX = delta.distance*cos((this->getYaw())*PI/180);
 		float newY = delta.distance*sin((this->getYaw())*PI/180);
 		setYaw((oldYaw + newYaw)%360);
+		float newX = delta.distance*cos((this->getYaw())*PI/180);
 		setX(oldX + newX);
 		setY(oldY + newY);
 

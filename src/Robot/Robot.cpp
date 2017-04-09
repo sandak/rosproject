@@ -30,8 +30,9 @@ Robot::Robot(HamsterAPI::Hamster * hamster, MovementPolicy * movementPolicy) {
 LocationDelta Robot::moveRobot() {
 	struct LastCommand newCommand;
 	newCommand = movementPolicy->move();
-
-	return this->updatePose(newCommand);
+	LocationDelta retVal = this->updatePose(newCommand);
+	this->lastCommand = newCommand;
+	return retVal;
 }
 
 HamsterAPI::LidarScan Robot::getLidarScan() {
@@ -55,10 +56,11 @@ LocationDelta Robot::updatePose(struct LastCommand newCommand) {
 
 	long t = newCommand.time - this->lastCommand.time;
 
-	delta.distance = newCommand.speed * t / 1000; // 1000 to convert from meter over second to meter over milli seconds
+	delta.distance = newCommand.speed * t / 100; // 1000 to convert from meter over second to meter over milli seconds
 	delta.angle = lastCommand.angle;
 
 	this->loc.updateLocation(delta);
+
 
 	return delta;
 }
