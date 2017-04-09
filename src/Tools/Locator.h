@@ -16,9 +16,8 @@
 #include "../Robot/Robot.h"
 #include "../properties.h"
 
-
-
 using namespace std;
+
 
 class Locator {
 private:

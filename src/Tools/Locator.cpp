@@ -7,6 +7,7 @@
 
 #include "Locator.h"
 
+
 Locator::Locator(Robot* robot) {
 	this->robot = robot;
 	this->startParticlesNum = INIT_PARTICLES_AMOUNT;
@@ -106,6 +107,7 @@ void Locator::drawMap() {
 			y_end = y + (std::sin(yaw));
 			cv::Point_<int>* end = new cv::Point_<int>(x_end, y_end);
 
+			//cv::arrowedLine(*m, *start,*end, *color, 1, 8, 0,0.1);
 			cv::circle(*m, *start, 3, *color, 1, 8, 0);
 		}
 		itr++;
