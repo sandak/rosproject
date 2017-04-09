@@ -81,7 +81,7 @@ bool RandomMovementPolicy::willCollide(std::vector<double> distances,
 }
 
 bool RandomMovementPolicy::isFrontFree() {
-	// Degrees : [90, 270]
+	// Degrees : [90,time(&(retVal.time)); 270]
 
 	std::vector<double> distances;
 
@@ -134,7 +134,7 @@ struct LastCommand RandomMovementPolicy::moveForward() {
 
 	retVal.speed = minDistance / 5.0;
 	retVal.angle = 0;
-	time(&(retVal.time));
+	retVal.time = getTimeMil();
 
 	return retVal;
 }
@@ -143,12 +143,12 @@ struct LastCommand RandomMovementPolicy::turnLeft() {
 	struct LastCommand retVal;
 
 	//HamsterAPI::Log::i("Client", "Turning Left");
-	while (!isFrontFree())
+	//while (!isFrontFree())
 		this->robot->getHamster()->sendSpeed(0.04, 45.0);
 
 	retVal.speed = 0.04;
 	retVal.angle = 45;
-	time(&(retVal.time));
+	retVal.time = getTimeMil();
 
 	return retVal;
 
@@ -158,12 +158,12 @@ struct LastCommand RandomMovementPolicy::turnRight() {
 
 	struct LastCommand retVal;
 	//HamsterAPI::Log::i("Client", "Turning Right");
-	while (!isFrontFree())
+	//while (!isFrontFree())
 		this->robot->getHamster()->sendSpeed(0.04, -45.0);
 
 	retVal.speed = 0.04;
 	retVal.angle = -45.0;
-	time(&(retVal.time));
+	retVal.time = getTimeMil();
 
 	return retVal;
 }
@@ -172,11 +172,12 @@ struct LastCommand RandomMovementPolicy::moveBackwards() {
 	struct LastCommand retVal;
 
 	//HamsterAPI::Log::i("Client", "Moving Backwards");
+	//TODO need fix while with command
 	while (!isLeftFree() && !isRightFree() && isBackFree()) {
 		this->robot->getHamster()->sendSpeed(-0.4, 0.0);
 		retVal.speed = -0.4;
 		retVal.angle = 0.0;
-		time(&(retVal.time));
+		retVal.time = getTimeMil();
 	}
 	if (isLeftFree())
 		retVal = turnLeft();
@@ -193,7 +194,7 @@ struct LastCommand RandomMovementPolicy::stopMoving() {
 
 	retVal.speed = 0.0;
 	retVal.angle = 0.0;
-	time(&(retVal.time));
+	retVal.time = getTimeMil();
 
 	return retVal;
 }

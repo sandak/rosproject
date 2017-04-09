@@ -5,9 +5,12 @@
 #include "Robot/Robot.h"
 #include "Tools/Locator.h"
 #include <ctime>
+
+
 using namespace std;
 
 int main() {
+
 
 	HamsterAPI::Hamster* hamster;
 
@@ -21,9 +24,9 @@ int main() {
 
 		while (hamster->isConnected()) {
 			try {
-				//locator->locate();
-				robot->move();
-				locator->drawMap();
+				locator->locate();
+				//robot->move();
+				//locator->drawMap();
 			} catch (const HamsterAPI::HamsterError & message_error) {
 				HamsterAPI::Log::i("Client", message_error.what());
 			}

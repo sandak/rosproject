@@ -14,7 +14,7 @@
 #include "../Entities/LocationDelta.h"
 #include "LastCommand.h"
 #include "../properties.h"
-
+#include "../Util.h"
 
 class MovementPolicy;
 class Robot: public Entity{
@@ -28,7 +28,7 @@ private:
 public:
 	LocationDelta updatePose(struct LastCommand newCommand);
 	Robot(HamsterAPI::Hamster * hamster,MovementPolicy * movementPolicy);
-	LocationDelta move();
+	LocationDelta moveRobot();
 
 	HamsterAPI::LidarScan getLidarScan();
 	HamsterAPI::OccupancyGrid getOccupancyGridMap();

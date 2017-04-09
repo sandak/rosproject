@@ -14,19 +14,19 @@
 
 class Location {
 private:
-	int x,y;
+	float x,y;
 	int yaw;
 public:
 
-	Location(int x, int y, int yaw);
+	Location(float x, float y, int yaw);
 	Location();
 
 	Location operator+(Location delta);
-	int getX();
-	int getY();
+	float getX();
+	float getY();
 	int getYaw();
-	void setX(int x);
-	void setY(int y);
+	void setX(float x);
+	void setY(float y);
 	void setYaw(int yaw);
 
 	void updateLocation(struct LocationDelta delta);

@@ -6,12 +6,12 @@
  *      Author: user
  */
 #include <iostream>
+
 #include "Robot.h"
 
 using namespace std;
 
-
-Robot::Robot(HamsterAPI::Hamster * hamster,MovementPolicy * movementPolicy) {
+Robot::Robot(HamsterAPI::Hamster * hamster, MovementPolicy * movementPolicy) {
 	this->hamster = hamster;
 	this->movementPolicy = movementPolicy;
 
@@ -19,42 +19,43 @@ Robot::Robot(HamsterAPI::Hamster * hamster,MovementPolicy * movementPolicy) {
 	this->loc.setY(hamster->getPose().getY());
 	this->loc.setYaw((hamster->getPose().getHeading()));
 
-	time(&this->lastCommand.time);
+
+
+
+	this->lastCommand.time = getTimeMil();
 	this->lastCommand.speed = 0;
 	this->lastCommand.angle = 0;
 }
 
-
-LocationDelta Robot::move(){
+LocationDelta Robot::moveRobot() {
 	struct LastCommand newCommand;
 	newCommand = movementPolicy->move();
 
 	return this->updatePose(newCommand);
 }
 
-HamsterAPI::LidarScan Robot::getLidarScan(){
+HamsterAPI::LidarScan Robot::getLidarScan() {
 
 	return this->hamster->getLidarScan();
 }
 
-HamsterAPI::OccupancyGrid Robot::getOccupancyGridMap(){
+HamsterAPI::OccupancyGrid Robot::getOccupancyGridMap() {
 
 	return this->hamster->getSLAMMap();
 }
 
-HamsterAPI::Hamster* Robot::getHamster(){
+HamsterAPI::Hamster* Robot::getHamster() {
 
 	return this->hamster;
 }
 
-LocationDelta Robot::updatePose(struct LastCommand newCommand)
-{
+LocationDelta Robot::updatePose(struct LastCommand newCommand) {
 
 	struct LocationDelta delta;
 
-	float t = newCommand.time - this->lastCommand.time;
+	long t = newCommand.time - this->lastCommand.time;
 
-	delta.distance = newCommand.speed*t;
+	delta.distance = newCommand.speed * t / 1000; // 1000 to convert from meter over second to meter over milli seconds
 	delta.angle = lastCommand.angle;
 
 	this->loc.updateLocation(delta);

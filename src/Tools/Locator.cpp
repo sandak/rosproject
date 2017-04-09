@@ -23,7 +23,7 @@ Location Locator::locate() {
 	while (maxParticle->getBelief() < 100) {
 		//cout<<maxParticle->getBelief()<<endl;
 		count++;
-		LocationDelta delta = robot->move();
+		LocationDelta delta = robot->moveRobot();
 		//cout << "move end" << endl;
 		updatAllParticles(robot->getLidarScan(), delta);
 		//cout << "update end" << endl;
@@ -91,16 +91,20 @@ void Locator::drawMap() {
 		int x = (*itr)->getLoc()->getX();
 		int y = (*itr)->getLoc()->getY();
 		int yaw = (*itr)->getLoc()->getYaw();
-		int x_end,y_end;
+		int x_end, y_end;
 		int mapH = map.getHeight();
 		int mapW = map.getWidth();
 		if (y < mapH && y > 0 && x < mapW && x > 0) {
+
+			m->at<cv::Vec3b>(y, x).val[0] = 0;
+			m->at<cv::Vec3b>(y, x).val[1] = 0;
+			m->at<cv::Vec3b>(y, x).val[2] = 255;
 
 			cv::Scalar_<double> *color = new cv::Scalar_<double>(0, 0, 255);
 			cv::Point_<int>* start = new cv::Point_<int>(x, y);
 			x_end = x + (std::cos(yaw));
 			y_end = y + (std::sin(yaw));
-			cv::Point_<int>* end = new cv::Point_<int>(x_end , y_end);
+			cv::Point_<int>* end = new cv::Point_<int>(x_end, y_end);
 
 			cv::circle(*m, *start, 3, *color, 1, 8, 0);
 		}

@@ -7,7 +7,7 @@
 
 #include "Location.h"
 
-Location::Location(int x, int y , int yaw) {
+Location::Location(float x, float y , int yaw) {
 	this->x = x;
 	this->y = y;
 	this->yaw = yaw;
@@ -21,10 +21,15 @@ Location::Location()
 
 void Location::updateLocation(struct LocationDelta delta){
 
-
-		setYaw((getYaw() + delta.angle)%360);
-		setX(getX() + delta.distance*cos((this->getYaw())*PI/180));
-		setY(getY() + delta.distance*sin((this->getYaw())*PI/180));
+		int oldYaw = getYaw();
+		float oldX = getX();
+		float oldY = getY();
+		int newYaw = delta.angle;
+		float newX = delta.distance*cos((this->getYaw())*PI/180);
+		float newY = delta.distance*sin((this->getYaw())*PI/180);
+		setYaw((oldYaw + newYaw)%360);
+		setX(oldX + newX);
+		setY(oldY + newY);
 
 }
 
@@ -37,11 +42,11 @@ Location Location::operator +(Location delta)
 	return *this;
 }
 
-int Location::getX(){
+float Location::getX(){
 	return this->x;
 }
 
-int Location::getY(){
+float Location::getY(){
 	return this->y;
 }
 
@@ -49,11 +54,11 @@ int Location::getYaw(){
 	return this->yaw;
 }
 
-void Location::setX(int x){
+void Location::setX(float x){
 	this->x = x;
 }
 
-void Location::setY(int y){
+void Location::setY(float y){
 	this->y=y;
 }
 

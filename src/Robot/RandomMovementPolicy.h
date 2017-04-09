@@ -10,6 +10,8 @@
 
 #include "MovementPolicy.h"
 #include "../Entities/LocationDelta.h"
+#include "../Util.h"
+
 class RandomMovementPolicy: public MovementPolicy {
 private:
 
