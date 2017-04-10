@@ -24,6 +24,7 @@ int main() {
 
 		while (hamster->isConnected()) {
 			try {
+				//hamster->sendSpeed(1,45);
 				locator->locate();
 				//robot->move();
 				//locator->drawMap();

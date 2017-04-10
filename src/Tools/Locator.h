@@ -27,6 +27,7 @@ private:
 	int startParticlesNum;
 	void createSons(Particle *father ,int count ,int radius);
 	void drawRobot(cv::Mat_<cv::Vec3b>* m);
+	void drawParticle(cv::Mat_<cv::Vec3b>* m,Particle * p,int arrowLength);
 	void drawEntity(Entity entity);
 public:
 

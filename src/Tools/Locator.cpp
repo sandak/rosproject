@@ -7,7 +7,6 @@
 
 #include "Locator.h"
 
-
 Locator::Locator(Robot* robot) {
 	this->robot = robot;
 	this->startParticlesNum = INIT_PARTICLES_AMOUNT;
@@ -22,14 +21,14 @@ Location Locator::locate() {
 	Particle* maxParticle = getMaxBeliefParticle();
 
 	while (maxParticle->getBelief() < 100) {
-		//cout<<maxParticle->getBelief()<<endl;
+
 		count++;
 		LocationDelta delta = robot->moveRobot();
-		//cout << "move end" << endl;
+
 		updatAllParticles(robot->getLidarScan(), delta);
-		//cout << "update end" << endl;
+
 		drawMap();
-		//cout << "draw end" << endl;
+
 		maxParticle = this->getMaxBeliefParticle();
 	}
 	return *(maxParticle->getLoc());
@@ -95,20 +94,10 @@ void Locator::drawMap() {
 		int x_end, y_end;
 		int mapH = map.getHeight();
 		int mapW = map.getWidth();
-		if (y < mapH && y > 0 && x < mapW && x > 0) {
+		if (y < mapH && y > 0 && x < mapW && x > 0){
 
-			m->at<cv::Vec3b>(y, x).val[0] = 0;
-			m->at<cv::Vec3b>(y, x).val[1] = 0;
-			m->at<cv::Vec3b>(y, x).val[2] = 255;
+			drawParticle(m, *itr,5);
 
-			cv::Scalar_<double> *color = new cv::Scalar_<double>(0, 0, 255);
-			cv::Point_<int>* start = new cv::Point_<int>(x, y);
-			x_end = x + (std::cos(yaw));
-			y_end = y + (std::sin(yaw));
-			cv::Point_<int>* end = new cv::Point_<int>(x_end, y_end);
-
-			//cv::arrowedLine(*m, *start,*end, *color, 1, 8, 0,0.1);
-			cv::circle(*m, *start, 3, *color, 1, 8, 0);
 		}
 		itr++;
 	}
@@ -119,6 +108,23 @@ void Locator::drawMap() {
 	cv::waitKey(1);
 
 	//cout << "end draw func" << endl;
+}
+
+void Locator::drawParticle(cv::Mat_<cv::Vec3b>* m, Particle * p,int arrowLength) {
+	float x = p->getLoc()->getX();
+	float y = p->getLoc()->getY();
+	int yaw = p->getLoc()->getYaw();
+
+	float x_end,y_end;
+
+	cv::Scalar_<double> * color = new cv::Scalar_<double>(0, 0, 255);
+	cv::Point_<int>* start = new cv::Point_<int>((int)x, (int)y);
+	x_end = x + (arrowLength * std::cos(yaw));
+	y_end = y + (arrowLength * std::sin(yaw));
+	cv::Point_<int>* end = new cv::Point_<int>((int)x_end,(int)y_end);
+	cv::line(*m,*start,*end,*color,1,1,1);
+	//cv::circle(*m, *start, 1, *color, 1, 1, 1);
+
 }
 
 void Locator::drawEntity(Entity entity) {
@@ -205,6 +211,6 @@ Particle* Locator::getMaxBeliefParticle() {
 }
 
 Locator::~Locator() {
-	// TODO Auto-generated destructor stub
+// TODO Auto-generated destructor stub
 }
 
