@@ -25,7 +25,12 @@ int main() {
 		while (hamster->isConnected()) {
 			try {
 				//hamster->sendSpeed(1,45);
-				locator->locate();
+				try {
+					locator->locate();
+				} catch (const HamsterAPI::HamsterError & connection_error) {
+					robot->getHamster()->reconnect();
+				}
+
 				//robot->move();
 				//locator->drawMap();
 			} catch (const HamsterAPI::HamsterError & message_error) {
