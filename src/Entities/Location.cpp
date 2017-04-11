@@ -8,63 +8,62 @@
 #include "Location.h"
 #include <iostream>
 
-Location::Location(float x, float y , int yaw) {
+Location::Location(float x, float y, int yaw) {
 	this->x = x;
 	this->y = y;
 	this->yaw = yaw;
 }
-Location::Location()
-{
+Location::Location() {
 	this->x = 0;
 	this->y = 0;
 	this->yaw = 0;
 }
 
-void Location::updateLocation(struct LocationDelta delta){
+void Location::updateLocation(struct LocationDelta delta) {
 
-	std::cout << "delta angle : "<<delta.angle << std::endl;
-		int oldYaw = getYaw();
-		float oldX = getX();
-		float oldY = getY();
-		int newYaw = delta.angle;
-		float newY = delta.distance*sin((this->getYaw())*PI/180);
-		setYaw((oldYaw + newYaw)%360);
-		float newX = delta.distance*cos((this->getYaw())*PI/180);
-		setX(oldX + newX);
-		setY(oldY + newY);
+	std::cout << "delta angle : " << delta.angle << std::endl;
+	int oldYaw = getYaw();
+	float oldX = getX();
+	float oldY = getY();
+	int newYaw = (oldYaw + delta.angle)%360;
+	setYaw(newYaw);
+	float newY = delta.distance * sin((this->getYaw()) * PI / 180);
+
+	float newX = delta.distance * cos((this->getYaw()) * PI / 180);
+	setX(oldX + newX);
+	setY(oldY + newY);
 
 }
 
-Location Location::operator +(Location delta)
-{
-	this->setX(this->getX()+delta.getX());
-	this->setY(this->getY()+delta.getY());
-	this->setYaw(delta.getYaw()+this->getYaw());
+Location Location::operator +(Location delta) {
+	this->setX(this->getX() + delta.getX());
+	this->setY(this->getY() + delta.getY());
+	this->setYaw(delta.getYaw() + this->getYaw());
 
 	return *this;
 }
 
-float Location::getX(){
+float Location::getX() {
 	return this->x;
 }
 
-float Location::getY(){
+float Location::getY() {
 	return this->y;
 }
 
-int Location::getYaw(){
+int Location::getYaw() {
 	return this->yaw;
 }
 
-void Location::setX(float x){
+void Location::setX(float x) {
 	this->x = x;
 }
 
-void Location::setY(float y){
-	this->y=y;
+void Location::setY(float y) {
+	this->y = y;
 }
 
-void Location::setYaw(int yaw){
+void Location::setYaw(int yaw) {
 	this->yaw = yaw;
 }
 
