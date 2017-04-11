@@ -29,8 +29,27 @@ Robot::Robot(HamsterAPI::Hamster * hamster, MovementPolicy * movementPolicy) {
 
 LocationDelta Robot::moveRobot() {
 	struct LastCommand newCommand;
+	float before_move_real_x = this->getHamster()->getPose().getX();
+	float before_move_real_y = this->getHamster()->getPose().getY();
+	float before_move_real_yaw = this->getHamster()->getPose().getHeading();
+
 	newCommand = movementPolicy->move();
-	LocationDelta retVal = this->updatePose(newCommand);
+
+	struct LocationDelta retVal;
+	if(IS_GETPOSE_ENABLED == false){
+		 retVal = this->updatePose(newCommand);
+	}
+	else
+	{
+		float after_move_real_x = this->getHamster()->getPose().getX();
+		float after_move_real_y = this->getHamster()->getPose().getY();
+		float after_move_real_yaw = this->getHamster()->getPose().getHeading();
+
+		retVal.angle = after_move_real_yaw - before_move_real_yaw;
+		retVal.distance  = sqrt(pow((before_move_real_x - after_move_real_x),2)+
+								pow((before_move_real_y - after_move_real_y),2));
+	}
+
 	this->lastCommand = newCommand;
 	return retVal;
 }
@@ -57,10 +76,10 @@ LocationDelta Robot::updatePose(struct LastCommand newCommand) {
 	long t = newCommand.time - this->lastCommand.time;
 
 	delta.distance = newCommand.speed * t / 1000; // dividing by 1000 to convert from meter over second to meter over milli seconds
-	//delta.angle = lastCommand.angle;	//TODO add ackermann steering angle
+	//delta.angle = lastCommand.angle;
 	if(newCommand.angle == 45)
 	{
-		delta.angle = t*ANGULAR_SPEED/1000; //dividing by 1000 to converto from angle over second to angle over millisecond
+		delta.angle = t*ANGULAR_SPEED/1000; //dividing by 1000 to convert from angle over second to angle over millisecond
 	}
 	else if(newCommand.angle == -45)
 	{
