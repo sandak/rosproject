@@ -123,7 +123,7 @@ bool RandomMovementPolicy::isBackFree() {
 
 struct LastCommand RandomMovementPolicy::moveForward() {
 
-	struct LastCommand retVal;
+	struct LastCommand command;
 	float minDistance = findMinDistance(170, 190);
 	if (minDistance > 5.0) {
 		minDistance = 5.0;
@@ -132,71 +132,71 @@ struct LastCommand RandomMovementPolicy::moveForward() {
 	//HamsterAPI::Log::i("Client", "Moving Forward");
 	this->robot->getHamster()->sendSpeed(minDistance / 5.0, 0.0);
 
-	retVal.speed = minDistance / 5.0;
-	retVal.angle = 0;
-	retVal.time = getTimeMil();
+	command.speed = minDistance / 5.0;
+	command.angle = 0;
+	command.time = getTimeMil();
 
-	return retVal;
+	return command;
 }
 
 struct LastCommand RandomMovementPolicy::turnLeft() {
-	struct LastCommand retVal;
+	struct LastCommand command;
 
 	//HamsterAPI::Log::i("Client", "Turning Left");
 	//while (!isFrontFree())
 		this->robot->getHamster()->sendSpeed(0.04, 45.0);
 
-	retVal.speed = 0.04;
-	retVal.angle = 45;
-	retVal.time = getTimeMil();
+		command.speed = 0.04;
+		command.angle = 45;
+		command.time = getTimeMil();
 
-	return retVal;
+	return command;
 
 }
 
 struct LastCommand RandomMovementPolicy::turnRight() {
 
-	struct LastCommand retVal;
+	struct LastCommand command;
 	//HamsterAPI::Log::i("Client", "Turning Right");
 	//while (!isFrontFree())
 		this->robot->getHamster()->sendSpeed(0.04, -45.0);
 
-	retVal.speed = 0.04;
-	retVal.angle = -45.0;
-	retVal.time = getTimeMil();
+		command.speed = 0.04;
+		command.angle = -45.0;
+		command.time = getTimeMil();
 
-	return retVal;
+	return command;
 }
 
 struct LastCommand RandomMovementPolicy::moveBackwards() {
-	struct LastCommand retVal;
+	struct LastCommand command;
 
 	//HamsterAPI::Log::i("Client", "Moving Backwards");
 	//TODO need fix while with command
 	while (!isLeftFree() && !isRightFree() && isBackFree()) {
 		this->robot->getHamster()->sendSpeed(-0.4, 0.0);
-		retVal.speed = -0.4;
-		retVal.angle = 0.0;
-		retVal.time = getTimeMil();
+		command.speed = -0.4;
+		command.angle = 0.0;
+		command.time = getTimeMil();
 	}
 	if (isLeftFree())
-		retVal = turnLeft();
+		command = turnLeft();
 	else
-		retVal = turnRight();
+		command = turnRight();
 
-	return retVal;
+	return command;
 }
 
 struct LastCommand RandomMovementPolicy::stopMoving() {
-	struct LastCommand retVal;
+	struct LastCommand command;
 
 	this->robot->getHamster()->sendSpeed(0.0, 0.0);
 
-	retVal.speed = 0.0;
-	retVal.angle = 0.0;
-	retVal.time = getTimeMil();
+	command.speed = 0.0;
+	command.angle = 0.0;
+	command.time = getTimeMil();
 
-	return retVal;
+	return command;
 }
 
 float RandomMovementPolicy::findMinDistance(int minRange, int maxRange) {
