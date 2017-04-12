@@ -9,7 +9,7 @@
 
 Locator::Locator(Robot* robot) {
 	this->robot = robot;
-	this->startParticlesNum = INIT_PARTICLES_AMOUNT; //TODO remove this unnecessary data member
+
 	this->map = robot->getOccupancyGridMap();
 }
 
@@ -150,7 +150,7 @@ void Locator::spreadParticles() {
 	/* Intializes random number generator */
 	srand((unsigned) time(&t));
 
-	for (int i = 0; i < startParticlesNum; i++) {
+	for (int i = 0; i < INIT_PARTICLES_AMOUNT; i++) {
 		do {
 			x = rand() % this->map.getWidth();
 			y = rand() % this->map.getHeight();
