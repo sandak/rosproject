@@ -9,7 +9,7 @@
 
 Locator::Locator(Robot* robot) {
 	this->robot = robot;
-	this->startParticlesNum = INIT_PARTICLES_AMOUNT;
+	this->startParticlesNum = INIT_PARTICLES_AMOUNT; //TODO remove this unnecessary data member
 	this->map = robot->getOccupancyGridMap();
 }
 
@@ -34,8 +34,7 @@ Location Locator::locate() {
 	return *(maxParticle->getLoc());
 }
 
-void Locator::updatAllParticles(HamsterAPI::LidarScan lidarScan,
-		LocationDelta delta) {
+void Locator::updatAllParticles(HamsterAPI::LidarScan lidarScan, LocationDelta delta) {
 	//cout << " enter update all" << endl;
 
 	vector<Particle*>::iterator itr = this->particles.begin();
