@@ -21,7 +21,7 @@ int main() {
 		Robot * robot = new Robot(hamster, policy);
 		policy->setRobot(robot);
 		Locator * locator = new Locator(robot);
-
+		double resolution = hamster->getSLAMMap().getResolution();
 		while (hamster->isConnected()) {
 			try {
 				//hamster->sendSpeed(1,45);

@@ -10,7 +10,7 @@
 
 
 #define PI 3.14159265359
-#define INIT_PARTICLES_AMOUNT 200
+#define INIT_PARTICLES_AMOUNT 300
 #define BELIEF_FACTOR 1.2
 #define IS_GETPOSE_ENABLED false
 #define ANGULAR_SPEED 120 // degrees per second (for 45 wheel angle)

@@ -17,12 +17,13 @@ Location Locator::locate() {
 
 	cv::namedWindow("locating");
 	spreadParticles();
-	int count = 0;
+	int numOfIterations = 0;
 	Particle* maxParticle = getMaxBeliefParticle();
 
 	while (maxParticle->getBelief() < 100) {
 
-		count++;
+		numOfIterations++;
+		sleep(1);
 		LocationDelta delta = robot->moveRobot();
 
 		updatAllParticles(robot->getLidarScan(), delta);
@@ -34,7 +35,8 @@ Location Locator::locate() {
 	return *(maxParticle->getLoc());
 }
 
-void Locator::updatAllParticles(HamsterAPI::LidarScan lidarScan, LocationDelta delta) {
+void Locator::updatAllParticles(HamsterAPI::LidarScan lidarScan,
+		LocationDelta delta) {
 	//cout << " enter update all" << endl;
 
 	vector<Particle*>::iterator itr = this->particles.begin();
@@ -93,7 +95,7 @@ void Locator::drawMap() {
 		int x_end, y_end;
 		int mapH = map.getHeight();
 		int mapW = map.getWidth();
-		if (y < mapH && y > 0 && x < mapW && x > 0){
+		if (y < mapH && y > 0 && x < mapW && x > 0) {
 
 			drawParticle(m, *itr,5);
 
@@ -109,20 +111,23 @@ void Locator::drawMap() {
 	//cout << "end draw func" << endl;
 }
 
-void Locator::drawParticle(cv::Mat_<cv::Vec3b>* m, Particle * p,int arrowLength) {
+void Locator::drawParticle(cv::Mat_<cv::Vec3b>* m, Particle * p,
+		int arrowLength) {
 	float x = p->getLoc()->getX();
 	float y = p->getLoc()->getY();
+	float i = y / map.getResolution();
+	float j = x /map.getResolution();
 	int yaw = p->getLoc()->getYaw();
 
-	float x_end,y_end;
+	float j_end, i_end;
 
 	cv::Scalar_<double> * color = new cv::Scalar_<double>(0, 0, 255);
-	cv::Point_<int>* start = new cv::Point_<int>((int)x, (int)y);
-	x_end = x + (arrowLength * std::cos(yaw));
-	y_end = y + (arrowLength * std::sin(yaw));
-	cv::Point_<int>* end = new cv::Point_<int>((int)x_end,(int)y_end);
-	cv::line(*m,*start,*end,*color,1,1,1);
-	//cv::circle(*m, *start, 1, *color, 1, 1, 1);
+	cv::Point_<int>* start = new cv::Point_<int>((int) (i) , (int) (j));
+	j_end = j  + (arrowLength * std::cos(yaw));
+	i_end = i + (arrowLength * std::sin(yaw));
+	cv::Point_<int>* end = new cv::Point_<int>((int) (i_end), (int) (j_end));
+	cv::line(*m, *start, *end, *color, 1, 1, 0);
+	cv::circle(*m, *start, 2, *color, 1, 1, 0);
 
 }
 
@@ -134,11 +139,16 @@ void Locator::drawEntity(Entity entity) {
 
 void Locator::drawRobot(cv::Mat_<cv::Vec3b> * m) {
 	float robot_x, robot_y, robot_heading;
-	robot_x = robot->getHamster()->getPose().getX() + ((*m).cols) / 2;
-	robot_y = robot->getHamster()->getPose().getY() + ((*m).rows) / 2;
+	float robot_i,robot_j;
+
+	robot_x = robot->getHamster()->getPose().getX() / map.getResolution();
+	robot_y = robot->getHamster()->getPose().getY() / map.getResolution();
 	robot_heading = robot->getHamster()->getPose().getHeading();
+
+	robot_i = robot_y + (map.getHeight()/2.0);
+	robot_j = robot_x + (map.getWidth()/2.0);
 	cv::Scalar_<int> *color = new cv::Scalar_<int>(255, 0, 0);
-	cv::Point_<float>* position = new cv::Point_<float>(robot_x, robot_y);
+	cv::Point_<float>* position = new cv::Point_<float>(robot_i, robot_j);
 
 	cv::circle(*m, *position, 3, *color, 1, 8, 0);
 }
@@ -157,7 +167,7 @@ void Locator::spreadParticles() {
 			yaw = rand() % 360;
 		} while (map.getCell(x, y) != HamsterAPI::CELL_FREE);
 
-		particles.push_back(new Particle(x, y, yaw, this->map));
+		particles.push_back(new Particle(x*map.getResolution(), y*map.getResolution(), yaw, this->map));
 
 	}
 

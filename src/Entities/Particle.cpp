@@ -24,10 +24,13 @@ double Particle::getBelief() {
 }
 
 void Particle::update(HamsterAPI::LidarScan lidar, LocationDelta delta) {
+	std::cout << delta.angle << " " << delta.distance << std::endl;
+	std::cout << this->getLoc()->getX() << "," << this->getLoc()->getY() << std::endl;
 	this->loc->updateLocation(delta);
+	std::cout << this->getLoc()->getX() << "," << this->getLoc()->getY() << std::endl;
 	std::cout <<"particle yaw: "<<this->getLoc()->getYaw()<< std::endl;
 
-	//this->belief = BELIEF_FACTOR*this->getBelief()*probByMove(delta)*probScanMatch(lidar);
+	this->belief = BELIEF_FACTOR*this->getBelief()*probByMove(delta)*probScanMatch(lidar);
 
 }
 
@@ -40,7 +43,7 @@ double Particle::probScanMatch(HamsterAPI::LidarScan lidar) {
 	for (int i = 0; i < lidar.getScanSize(); i++) {
 		//std::cout<<lidar.getDistance(i)<<","<<i<<std::endl;
 		Location projection = calcPos(i, lidar.getDistance(i));
-		if (map.getCell(projection.getX(), projection.getY())
+		if (map.getCell(projection.getX()/this->map.getResolution(), projection.getY()/this->map.getResolution())
 				== HamsterAPI::CELL_OCCUPIED) // TODO advanced calc of div
 				{
 			hits++;
@@ -58,18 +61,20 @@ Location Particle::calcPos(int angle, int distance) {
 	double norm;
 	double angleRad;
 
-	Location retVal;
+	Location projection;
 
-	angleRad = angle*PI / 180;
+	angleRad = ((angle+this->getYaw())%360)*PI / 180;
 
-	norm = (distance) * (double) 100;
-	if (norm <= 250) {
-
-		retVal.setY((int) (norm * sin(angleRad)) + 250);
-		retVal.setX((int) (norm * cos(angleRad)) + 250);
-
-	}
-	return retVal;
+	projection.setX(this->getX() + distance*cos(angleRad));
+	projection.setY(this->getY() + distance*sin(angleRad));
+//	norm = (distance) * (double) 100;
+//	if (norm <= 250) {
+//
+//		retVal.setY((int) (norm * sin(angleRad)) + 250);
+//		retVal.setX((int) (norm * cos(angleRad)) + 250);
+//
+//	}
+	return projection;
 }
 
 Particle::~Particle() {
