@@ -16,12 +16,11 @@ int main() {
 
 	try {
 		hamster = new HamsterAPI::Hamster(1);
-		sleep(1);
 		RandomMovementPolicy * policy = new RandomMovementPolicy();
 		Robot * robot = new Robot(hamster, policy);
 		policy->setRobot(robot);
 		Locator * locator = new Locator(robot);
-		double resolution = hamster->getSLAMMap().getResolution();
+
 		while (hamster->isConnected()) {
 			try {
 				//hamster->sendSpeed(1,45);
