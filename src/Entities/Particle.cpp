@@ -41,15 +41,18 @@ double Particle::probByMove(LocationDelta delta) {
 double Particle::probScanMatch(HamsterAPI::LidarScan lidar) {
 	int hits = 0;
 	for (int i = 0; i < lidar.getScanSize(); i++) {
-		//std::cout<<lidar.getDistance(i)<<","<<i<<std::endl;
+
 		Location projection = calcPos(i, lidar.getDistance(i));
-		if (map.getCell(projection.getX()/this->map.getResolution(), projection.getY()/this->map.getResolution())
-				== HamsterAPI::CELL_OCCUPIED) // TODO advanced calc of div
+		std::cout<<lidar.getDistance(i)<<","<<i<<std::endl;
+		int x = projection.getX()/this->map.getResolution();
+		int y = projection.getY()/this->map.getResolution();
+		std::cout<<x<<","<<y<<std::endl;
+		if (map.getCell(x,y)== HamsterAPI::CELL_OCCUPIED) // TODO advanced calc of div
 				{
 			hits++;
 			std::cout << "++++++ " << hits << std::endl;
 		}
-
+		std::cout<<"step"<<std::endl;
 	}
 	std::cout << "hits " << hits << std::endl;
 
