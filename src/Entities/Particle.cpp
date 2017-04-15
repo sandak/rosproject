@@ -65,11 +65,15 @@ Location Particle::calcPos(int angle, int distance) {
 	double angleRad;
 
 	Location projection;
+	std::cout<<this->getX()<<","<<this->getY()<<","<<this->getYaw()<<std::endl;
 
 	angleRad = ((angle+this->getYaw())%360)*PI / 180;
 
 	projection.setX(this->getX() + distance*cos(angleRad));
 	projection.setY(this->getY() + distance*sin(angleRad));
+
+	std::cout<<angleRad<<","<<projection.getX()<<","<<projection.getY()<<std::endl;
+
 //	norm = (distance) * (double) 100;
 //	if (norm <= 250) {
 //
