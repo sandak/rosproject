@@ -25,7 +25,8 @@ private:
 	HamsterAPI::OccupancyGrid map;
 	Robot * robot;
 
-	void createSons(Particle *father ,int count ,int radius);
+	void createSons(Particle *father ,int count ,int radius , vector<Particle *> *sons);
+	void mergeSonsWithFathers(vector<Particle*>* sons);
 	void drawRobot(cv::Mat_<cv::Vec3b>* m);
 	void drawParticle(cv::Mat_<cv::Vec3b>* m,Particle * p,int arrowLength);
 	void drawEntity(Entity entity);

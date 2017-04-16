@@ -24,13 +24,16 @@ double Particle::getBelief() {
 }
 
 void Particle::update(HamsterAPI::LidarScan lidar, LocationDelta delta) {
-	std::cout << delta.angle << " " << delta.distance << std::endl;
-	std::cout << this->getLoc()->getX() << "," << this->getLoc()->getY() << std::endl;
+	std::cout << "particle update func: " << std::endl;
+	std::cout << "delta angle: " << delta.angle << ", delta distance: " << delta.distance << std::endl;
+	std::cout << "before x: " << this->getLoc()->getX() << ", before y: " << this->getLoc()->getY() << std::endl;
+	std::cout <<"before yaw: "<<this->getLoc()->getYaw()<< std::endl;
+	std::cout <<"updating location...." << std::endl;
 	this->loc->updateLocation(delta);
-	std::cout << this->getLoc()->getX() << "," << this->getLoc()->getY() << std::endl;
-	std::cout <<"particle yaw: "<<this->getLoc()->getYaw()<< std::endl;
+	std::cout << "after x: " <<  this->getLoc()->getX() << ", after y: " << this->getLoc()->getY() << std::endl;
+	std::cout <<"after yaw: "<<this->getLoc()->getYaw()<< std::endl;
 
-	this->belief = BELIEF_FACTOR*this->getBelief()*probByMove(delta)*probScanMatch(lidar);
+	//this->belief = BELIEF_FACTOR*this->getBelief()*probByMove(delta)*probScanMatch(lidar);
 
 }
 
