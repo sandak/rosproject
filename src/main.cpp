@@ -16,6 +16,7 @@ int main() {
 
 	try {
 		hamster = new HamsterAPI::Hamster(1);
+		sleep(2);
 		RandomMovementPolicy * policy = new RandomMovementPolicy();
 		Robot * robot = new Robot(hamster, policy);
 		policy->setRobot(robot);

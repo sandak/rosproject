@@ -42,7 +42,7 @@ void Locator::updatAllParticles(HamsterAPI::LidarScan lidarScan,
 
 	int particleCount = 0;
 	vector<Particle*>::iterator itr = this->particles.begin();
-	while (itr != this->particles.end()) {
+	while (itr != this->particles.end() && particles.size()!=0) {
 		try {
 			std::cout <<"updating particle num: " << ++particleCount << std::endl;
 
@@ -57,7 +57,7 @@ void Locator::updatAllParticles(HamsterAPI::LidarScan lidarScan,
 			}
 			if(bel >= 0.5 && bel <= 0.7)
 			{
-				createSons(*itr,3,2 , sons);
+				createSons(*itr,2,2 , sons);
 			}
 			if (bel > 0.7) {
 

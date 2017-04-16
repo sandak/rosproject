@@ -28,8 +28,8 @@ void Location::updateLocation(struct LocationDelta delta) {
 	int newYaw = (oldYaw + delta.angle)%360;
 	setYaw(newYaw);
 	float deltaY = delta.distance * sin((this->getYaw()) * PI / 180.0);
-
 	float deltaX = delta.distance * cos((this->getYaw()) * PI / 180.0);
+
 	setX(oldX + deltaX);
 	setY(oldY + deltaY);
 
