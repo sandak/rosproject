@@ -6,11 +6,9 @@
 #include "Tools/Locator.h"
 #include <ctime>
 
-
 using namespace std;
 
 int main() {
-
 
 	HamsterAPI::Hamster* hamster;
 
@@ -22,22 +20,17 @@ int main() {
 		policy->setRobot(robot);
 		Locator * locator = new Locator(robot);
 
-		while (hamster->isConnected()) {
-			try {
-				//hamster->sendSpeed(1,45);
-				try {
-					locator->locate();
-				} catch (const HamsterAPI::HamsterError & connection_error) {
-					robot->getHamster()->reconnect();
-				}
+		Location* finalLocation = locator->locate();
 
-				//robot->move();
-				//locator->drawMap();
-			} catch (const HamsterAPI::HamsterError & message_error) {
-				HamsterAPI::Log::i("Client", message_error.what());
-			}
-
+		if(finalLocation == NULL)
+		{
+			std::cout << "all particles died" << std::endl;
 		}
+		else
+		{
+			std::cout << "robot location is: (" << finalLocation->getX() << "," << finalLocation->getY() << ")" << std::endl;
+		}
+
 	} catch (const HamsterAPI::HamsterError & connection_error) {
 		HamsterAPI::Log::i("Client", connection_error.what());
 	}

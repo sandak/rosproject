@@ -34,7 +34,7 @@ public:
 
 
 	Locator(Robot* robot);
-	Location locate();
+	Location* locate();
 	void spreadParticles();
 	Particle* getMaxBeliefParticle();
 	void updatAllParticles(HamsterAPI::LidarScan lidarScan , LocationDelta delta);

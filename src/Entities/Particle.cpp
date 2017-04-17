@@ -36,8 +36,8 @@ void Particle::update(HamsterAPI::LidarScan lidar, LocationDelta delta) {
 			<< this->getLoc()->getY() << std::endl;
 	std::cout << "after yaw: " << this->getLoc()->getYaw() << std::endl;
 
-	this->belief = BELIEF_FACTOR * this->getBelief() * probByMove(delta)
-			* probScanMatch(lidar);
+	//this->belief = BELIEF_FACTOR * this->getBelief() * probByMove(delta)
+			//* probScanMatch(lidar);
 
 }
 
