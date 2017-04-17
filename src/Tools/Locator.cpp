@@ -59,8 +59,8 @@ void Locator::updatAllParticles(HamsterAPI::LidarScan lidarScan,
 
 				particles.erase(itr);
 			}
-			if (bel >= 0.5 && bel <= 0.7) {
-				createSons(*itr, 2, 2, sons);
+			if (bel >= 0.6 && bel <= 0.7) {
+				createSons(*itr, 2, 2, sons);//TODO need fix - > we trap in try to create sons loop
 			}
 			if (bel > 0.7) {
 
