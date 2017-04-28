@@ -20,8 +20,8 @@ Location::Location() {
 }
 
 void Location::updateLocation(struct LocationDelta delta) {
-	std::cout << "location.updateLocation func" << std::endl;
-	std::cout << "delta angle : " << delta.angle << std::endl;
+	//std::cout << "location.updateLocation func" << std::endl;
+	//std::cout << "delta angle : " << delta.angle << std::endl;
 	int oldYaw = getYaw();
 	float oldX = getX();
 	float oldY = getY();

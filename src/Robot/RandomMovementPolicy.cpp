@@ -53,9 +53,7 @@ RandomMovementPolicy::~RandomMovementPolicy() {
 void RandomMovementPolicy::getScansBetween(double min, double max,
 		std::vector<double> & distances) {
 	HamsterAPI::LidarScan scan = this->robot->getHamster()->getLidarScan();
-	for(int  i =0 ; i < scan.getScanSize(); i++){
-		std::cout << scan.getDistance(i) << " ";
-	}
+
 	for (size_t i = 0; i < scan.getScanSize(); i++) {
 		double degree = scan.getScanAngleIncrement() * i;
 		if (degree >= min && degree <= max)

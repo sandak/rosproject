@@ -25,9 +25,9 @@ Location* Locator::locate() {
 		numOfIterations++;
 
 		LocationDelta delta = robot->moveRobot();
-		std::cout << this->particles.size() << std::endl;
+		//std::cout << this->particles.size() << std::endl;
 		updatAllParticles(robot->getLidarScan(), delta);
-		std::cout << this->particles.size() << std::endl;
+		//std::cout << this->particles.size() << std::endl;
 		drawMap();
 
 		maxParticle = this->getMaxBeliefParticle();
@@ -39,32 +39,34 @@ Location* Locator::locate() {
 	}
 }
 
-void Locator::updatAllParticles(HamsterAPI::LidarScan lidarScan,
-		LocationDelta delta) {
+void Locator::updatAllParticles(HamsterAPI::LidarScan lidarScan,LocationDelta delta) {
 
 	vector<Particle*> * sons = new vector<Particle*>();
-
+	int particlesDeleted = 0 ;
 	int particleCount = 0;
 	vector<Particle*>::iterator itr = this->particles.begin();
 	while (itr != this->particles.end() && particles.size() != 0) {
 		try {
-			std::cout << "updating particle num: " << ++particleCount
-					<< std::endl;
+			//std::cout << "updating particle num: " << ++particleCount<< std::endl;
 
 			(*itr)->update(lidarScan, delta);
 
 			double bel = (*itr)->getBelief();
 
 			if (bel < 0.3) {
-
+				std::cout << "deleted particle" << endl;
+				particlesDeleted++;
 				particles.erase(itr);
+				std::cout << particlesDeleted << endl;
 			}
 			if (bel >= 0.6 && bel <= 0.7) {
-				createSons(*itr, 2, 2, sons);//TODO need fix - > we trap in try to create sons loop
+				createSons(*itr, 2, 2, sons); //TODO need fix - > we trap in try to create sons loop
+				std::cout << "created 2 sons" << endl;
 			}
 			if (bel > 0.7) {
 
 				createSons(*itr, 6, 2, sons);
+				std::cout << "created  6 sons" << endl;
 			}
 			itr++;
 		} catch (const std::exception& e) {
@@ -90,9 +92,8 @@ void Locator::mergeSonsWithFathers(vector<Particle*> * sons) {
 }
 
 void Locator::drawMap() {
-	//cout << "draw func" << endl;
-	cv::Mat_<cv::Vec3b>* m = new cv::Mat_<cv::Vec3b>(this->map.getHeight(),
-			this->map.getWidth());
+
+	cv::Mat_<cv::Vec3b>* m = new cv::Mat_<cv::Vec3b>(this->map.getHeight(),	this->map.getWidth());
 	vector<Particle*>::iterator itr = this->particles.begin();
 	u_int i, j;
 
@@ -115,21 +116,11 @@ void Locator::drawMap() {
 	}
 
 	while (itr != this->particles.end()) {
-		int x = (*itr)->getLoc()->getX();
-		int y = (*itr)->getLoc()->getY();
-		int yaw = (*itr)->getLoc()->getYaw();
-		int x_end, y_end;
-		int mapH = map.getHeight();
-		int mapW = map.getWidth();
-		if (y < mapH && y > 0 && x < mapW && x > 0) {
-
-			drawParticle(m, *itr, 5);
-
-		}
+		drawParticle(m, *itr, 5);
 		itr++;
 	}
 
-	drawRobot(m);
+	//drawRobot(m);
 
 	cv::imshow("locating", *m);
 	cv::waitKey(1);
@@ -137,23 +128,24 @@ void Locator::drawMap() {
 	//cout << "end draw func" << endl;
 }
 
-void Locator::drawParticle(cv::Mat_<cv::Vec3b>* m, Particle * p,
-		int arrowLength) {
+void Locator::drawParticle(cv::Mat_<cv::Vec3b>* m, Particle * p,int arrowLength) {
 	float x = p->getLoc()->getX();
 	float y = p->getLoc()->getY();
 	float i = y / map.getResolution();
 	float j = x / map.getResolution();
-	int yaw = p->getLoc()->getYaw();
-
+	int yawRad = p->getLoc()->getYaw()*PI/180;
+	int mapH = map.getHeight();
+	int mapW = map.getWidth();
 	float j_end, i_end;
-
-	cv::Scalar_<double> * color = new cv::Scalar_<double>(0, 0, 255);
-	cv::Point_<int>* start = new cv::Point_<int>((int) (i), (int) (j));
-	j_end = j + (arrowLength * std::cos(yaw));
-	i_end = i + (arrowLength * std::sin(yaw));
-	cv::Point_<int>* end = new cv::Point_<int>((int) (i_end), (int) (j_end));
-	cv::line(*m, *start, *end, *color, 1, 1, 0);
-	cv::circle(*m, *start, 2, *color, 1, 1, 0);
+	if (i < mapH && i > 0 && j < mapW && j > 0) {
+		cv::Scalar_<double> * color = new cv::Scalar_<double>(0, 0, 255);
+		cv::Point_<int>* start = new cv::Point_<int>((int) (i), (int) (j));
+		j_end = j + (arrowLength * std::cos(yawRad));
+		i_end = i + (arrowLength * std::sin(yawRad));
+		cv::Point_<int>* end = new cv::Point_<int>((int) (i_end), (int) (j_end));
+		cv::line(*m, *start, *end, *color, 1, 1, 0);
+		cv::circle(*m, *start, 2, *color, 1, 1, 0);
+	}
 
 }
 
@@ -181,70 +173,72 @@ void Locator::drawRobot(cv::Mat_<cv::Vec3b> * m) {
 void Locator::spreadParticles() {
 
 	time_t t;
-	int x, y;
+	double x, y;
 	double yaw;
 	/* Intializes random number generator */
 	srand((unsigned) time(&t));
-
-	for (int i = 0; i < INIT_PARTICLES_AMOUNT; i++) {
+int i,j;
+	for (int h = 0; h < INIT_PARTICLES_AMOUNT; h++) {
 		do {
-			x = rand() % this->map.getWidth();
-			y = rand() % this->map.getHeight();
+			i = rand() % this->map.getHeight();
+			j = rand() % this->map.getWidth();
 			yaw = rand() % 360;
-		} while (map.getCell(x, y) != HamsterAPI::CELL_FREE);
-
-		particles.push_back(
-				new Particle(x * map.getResolution(), y * map.getResolution(),
-						yaw, this->map));
+		} while (map.getCell(j, i) != HamsterAPI::CELL_FREE);
+		x = j *  map.getResolution();
+		y = i * map.getResolution();
+		particles.push_back(new Particle(x , y ,yaw, this->map));
 
 	}
 
 }
 
-void Locator::createSons(Particle *father, int count, int radius,
-		vector<Particle*> * sons) {
-	time_t t;
-	int x, y;
-	double yaw;
-	/* Intializes random number generator */
-	srand((unsigned) time(&t));
-	int triesCount;
-	bool isPushChild = true;
-	for (int i = 0; i < count; i++) {
-		triesCount = 1; //going to count how many tries to create child were attempted
-		do {
-			//TODO there is a particle jumping in from nowhere
-			x = rand() % (radius + 1);
-			y = rand() % (radius + 1);
-			int factor1 = rand() % 2;
-			int factor2 = rand() % 2;
-			if (factor1 == 0)
-				x += father->getLoc()->getX();
-			else
-				x = father->getLoc()->getX() - x;
-			if (factor2 == 0)
-				y += father->getLoc()->getY();
-			else
-				y = father->getLoc()->getY() - y;
-			yaw = rand() % 360;
+void Locator::createSons(Particle *father, int count, int radius,vector<Particle*> * sons) {
+	try{
+		time_t t;
+		int x, y;
+		double yaw;
+		/* Intializes random number generator */
+		srand((unsigned) time(&t));
+		int triesCount, i , j;
+		bool isPushChild = true;
+		for (int h = 0; h < count; h++) {
+			triesCount = 1; //going to count how many tries to create child were attempted
+			do {
+				//TODO there is a particle jumping in from nowhere
+				x = rand() % (radius + 1);
+				y = rand() % (radius + 1);
+				int factor1 = rand() % 2;
+				int factor2 = rand() % 2;
+				if (factor1 == 0)
+					x += father->getLoc()->getX();
+				else
+					x = father->getLoc()->getX() - x;
+				if (factor2 == 0)
+					y += father->getLoc()->getY();
+				else
+					y = father->getLoc()->getY() - y;
+				yaw = rand() % 360;
 
-			x = x / map.getResolution();
-			y = y / map.getResolution();
-			std::cout << "try number: " << triesCount << std::endl;
-			std::cout << "map.getCell(" << x << "," << y << ") = "
-					<< map.getCell(x, y) << std::endl;
-			if (triesCount++ == 100) {
-				isPushChild = false;
-				break;
-			}
-		} while (map.getCell(x, y) != HamsterAPI::CELL_FREE);
+				j = x / map.getResolution();
+				i = y / map.getResolution();
 
-		if (isPushChild)
-			sons->push_back(
-					new Particle(x * map.getResolution(),
-							y * map.getResolution(), yaw, this->map));
+				if (triesCount++ == 100) {
+					isPushChild = false;
+					break;
+				}
+			} while (map.getCell(j, i) != HamsterAPI::CELL_FREE);
 
+			if (isPushChild)
+				sons->push_back(
+						new Particle(x * map.getResolution(),
+								y * map.getResolution(), yaw, this->map));
+		}
 	}
+	catch (exception &e) {
+		cout << e.what() << endl;;
+	}
+
+
 }
 
 Particle* Locator::getMaxBeliefParticle() {

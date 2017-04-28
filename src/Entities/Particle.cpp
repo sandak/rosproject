@@ -24,20 +24,8 @@ double Particle::getBelief() {
 }
 
 void Particle::update(HamsterAPI::LidarScan lidar, LocationDelta delta) {
-	std::cout << "particle update func: " << std::endl;
-	std::cout << "delta angle: " << delta.angle << ", delta distance: "
-			<< delta.distance << std::endl;
-	std::cout << "before x: " << this->getLoc()->getX() << ", before y: "
-			<< this->getLoc()->getY() << std::endl;
-	std::cout << "before yaw: " << this->getLoc()->getYaw() << std::endl;
-	std::cout << "updating location...." << std::endl;
 	this->loc->updateLocation(delta);
-	std::cout << "after x: " << this->getLoc()->getX() << ", after y: "
-			<< this->getLoc()->getY() << std::endl;
-	std::cout << "after yaw: " << this->getLoc()->getYaw() << std::endl;
-
-	//this->belief = BELIEF_FACTOR * this->getBelief() * probByMove(delta)
-			//* probScanMatch(lidar);
+	this->belief = BELIEF_FACTOR * this->getBelief() * probByMove(delta)* probScanMatch(lidar);
 
 }
 
@@ -50,18 +38,18 @@ double Particle::probScanMatch(HamsterAPI::LidarScan lidar) {
 	for (int i = 0; i < lidar.getScanSize(); i++) {
 
 		Location projection = this->calcPos(i, lidar.getDistance(i));
-		std::cout << lidar.getDistance(i) << "," << i << std::endl;
+		//std::cout << lidar.getDistance(i) << "," << i << std::endl;
 		int x = projection.getX() / this->map.getResolution();
 		int y = projection.getY() / this->map.getResolution();
-		std::cout << "Obstacle x,y :  " << x << "," << y << std::endl;
+		//std::cout << "Obstacle x,y :  " << x << "," << y << std::endl;
 		if (map.getCell(x, y) == HamsterAPI::CELL_OCCUPIED) // TODO advanced calc of div
 		{
 			hits++;
-			std::cout << "++++++ " << hits << std::endl;
+			//std::cout << "++++++ " << hits << std::endl;
 		}
-		std::cout << "step" << std::endl;
+		//std::cout << "step" << std::endl;
 	}
-	std::cout << "hits " << hits << std::endl;
+	//std::cout << "hits " << hits << std::endl;
 
 	return (hits / 360.0);
 
@@ -72,17 +60,14 @@ Location Particle::calcPos(int angle, int distance) {
 	double angleRad;
 
 	Location projection;
-	std::cout << "particle position : " << this->getLoc()->getX() << ","
-			<< this->getLoc()->getY() << "," << this->getLoc()->getYaw()
-			<< std::endl;
+	//std::cout << "particle position : " << this->getLoc()->getX() << ","	<< this->getLoc()->getY() << "," << this->getLoc()->getYaw()<< std::endl;
 
 	angleRad = ((this->getLoc()->getYaw() + 180 + angle) % 360) * PI / 180;
 
 	projection.setX(this->getLoc()->getX() + distance * cos(angleRad));
 	projection.setY(this->getLoc()->getY() + distance * sin(angleRad));
 
-	std::cout << "projection position:  " << angleRad << ","
-			<< projection.getX() << "," << projection.getY() << std::endl;
+	//std::cout << "projection position:  " << angleRad << ","<< projection.getX() << "," << projection.getY() << std::endl;
 
 //	norm = (distance) * (double) 100;
 //	if (norm <= 250) {
