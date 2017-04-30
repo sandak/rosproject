@@ -125,17 +125,23 @@ struct LastCommand RandomMovementPolicy::moveForward() {
 
 	struct LastCommand command;
 	float minDistance = findMinDistance(170, 190);
-	if (minDistance > 5.0) {
+	if (minDistance >= 5.0) {
 		minDistance = 5.0;
+		this->robot->getHamster()->sendSpeed(minDistance / 5.0, 0.0);
+		command.speed = minDistance / 5.0;
+		command.angle = 0;
+		command.time = getTimeMil();
+	} else {
+		if (minDistance < 0.2) {
+			command = moveBackwards();
+		} else {
 
+			this->robot->getHamster()->sendSpeed(minDistance / 5.0, 0.0);
+			command.speed = minDistance / 5.0;
+			command.angle = 0;
+			command.time = getTimeMil();
+		}
 	}
-	//HamsterAPI::Log::i("Client", "Moving Forward");
-	this->robot->getHamster()->sendSpeed(minDistance / 5.0, 0.0);
-
-	command.speed = minDistance / 5.0;
-	command.angle = 0;
-	command.time = getTimeMil();
-
 	return command;
 }
 
@@ -171,9 +177,9 @@ struct LastCommand RandomMovementPolicy::turnRight() {
 struct LastCommand RandomMovementPolicy::moveBackwards() {
 	struct LastCommand command;
 
-	//HamsterAPI::Log::i("Client", "Moving Backwards");
+	HamsterAPI::Log::i("Client", "Moving Backwards");
 	//TODO need fix while with command
-	while (!isLeftFree() && !isRightFree() && isBackFree()) {
+	if (!isLeftFree() && !isRightFree() && isBackFree()) {
 		this->robot->getHamster()->sendSpeed(-0.4, 0.0);
 		command.speed = -0.4;
 		command.angle = 0.0;

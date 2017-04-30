@@ -22,6 +22,11 @@ int main() {
 
 		Location* finalLocation = locator->locate();
 
+		while(hamster->isConnected())
+		{
+			hamster->sendSpeed(1,45);
+		}
+
 		if(finalLocation == NULL)
 		{
 			std::cout << "all particles died" << std::endl;
