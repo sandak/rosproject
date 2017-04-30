@@ -144,11 +144,11 @@ struct LastCommand RandomMovementPolicy::turnLeft() {
 
 	//HamsterAPI::Log::i("Client", "Turning Left");
 	//while (!isFrontFree())
-		this->robot->getHamster()->sendSpeed(0.04, 45.0);
+	this->robot->getHamster()->sendSpeed(0.04, 45.0);
 
-		command.speed = 0.04;
-		command.angle = 45;
-		command.time = getTimeMil();
+	command.speed = 0.04;
+	command.angle = 45;
+	command.time = getTimeMil();
 
 	return command;
 
@@ -159,11 +159,11 @@ struct LastCommand RandomMovementPolicy::turnRight() {
 	struct LastCommand command;
 	//HamsterAPI::Log::i("Client", "Turning Right");
 	//while (!isFrontFree())
-		this->robot->getHamster()->sendSpeed(0.04, -45.0);
+	this->robot->getHamster()->sendSpeed(0.04, -45.0);
 
-		command.speed = 0.04;
-		command.angle = -45.0;
-		command.time = getTimeMil();
+	command.speed = 0.04;
+	command.angle = -45.0;
+	command.time = getTimeMil();
 
 	return command;
 }
