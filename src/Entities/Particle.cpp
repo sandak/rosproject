@@ -11,7 +11,7 @@ Particle::Particle(int x, int y, int yaw, HamsterAPI::OccupancyGrid map) {
 
 	this->loc = new Location(x, y, yaw);
 	this->map = map;
-	this->belief = 0.5;
+	this->belief = 0.2;
 
 }
 
@@ -25,7 +25,7 @@ double Particle::getBelief() {
 
 void Particle::update(HamsterAPI::LidarScan lidar, LocationDelta delta) {
 	this->loc->updateLocation(delta);
-	//this->belief = BELIEF_FACTOR * this->getBelief() * probByMove(delta)* probScanMatch(lidar);
+	this->belief =  probScanMatch(lidar);
 
 }
 
@@ -35,21 +35,42 @@ double Particle::probByMove(LocationDelta delta) {
 
 double Particle::probScanMatch(HamsterAPI::LidarScan lidar) {
 	double hits = 0.0;
-	for (int i = 0; i < lidar.getScanSize(); i++) {
+	for (int k = 0; k < lidar.getScanSize(); k++) {
 
-		Location projection = this->calcPos(i, lidar.getDistance(i));
-		//std::cout << lidar.getDistance(i) << "," << i << std::endl;
-		int x = projection.getX() / this->map.getResolution();
-		int y = projection.getY() / this->map.getResolution();
-		//std::cout << "Obstacle x,y :  " << x << "," << y << std::endl;
-		if (map.getCell(x, y) == HamsterAPI::CELL_OCCUPIED) // TODO advanced calc of div
+		Location projection = this->calcPos(k, lidar.getDistance(k));
+		int i = projection.getX() / this->map.getResolution();
+		int j = projection.getY() / this->map.getResolution();
+		if (map.getCell(i, j) == HamsterAPI::CELL_OCCUPIED) // TODO advanced calc of div
 		{
 			hits++;
-			//std::cout << "++++++ " << hits << std::endl;
 		}
-		//std::cout << "step" << std::endl;
+		else if (
+				(map.getCell(i+1, j) == HamsterAPI::CELL_OCCUPIED)||
+				(map.getCell(i, j+1) == HamsterAPI::CELL_OCCUPIED)||
+				(map.getCell(i+1, j+1) == HamsterAPI::CELL_OCCUPIED)||
+				(map.getCell(i-1, j-1) == HamsterAPI::CELL_OCCUPIED)||
+				(map.getCell(i, j-1) == HamsterAPI::CELL_OCCUPIED)||
+				(map.getCell(i-1, j) == HamsterAPI::CELL_OCCUPIED)||
+				(map.getCell(i+1, j-1) == HamsterAPI::CELL_OCCUPIED)||
+				(map.getCell(i-1, j+1) == HamsterAPI::CELL_OCCUPIED)
+		)
+		{
+			hits = hits +0.6;
+		}
+		else if (
+				(map.getCell(i+2, j) == HamsterAPI::CELL_OCCUPIED)||
+				(map.getCell(i, j+2) == HamsterAPI::CELL_OCCUPIED)||
+				(map.getCell(i+2, j+2) == HamsterAPI::CELL_OCCUPIED)||
+				(map.getCell(i-2, j-2) == HamsterAPI::CELL_OCCUPIED)||
+				(map.getCell(i, j-2) == HamsterAPI::CELL_OCCUPIED)||
+				(map.getCell(i-2, j) == HamsterAPI::CELL_OCCUPIED)||
+				(map.getCell(i+2, j-2) == HamsterAPI::CELL_OCCUPIED)||
+				(map.getCell(i-2, j+2) == HamsterAPI::CELL_OCCUPIED)
+		)
+		{
+			hits = hits +0.3;
+		}
 	}
-	//std::cout << "hits " << hits << std::endl;
 
 	return (hits / 360.0);
 
@@ -58,24 +79,11 @@ double Particle::probScanMatch(HamsterAPI::LidarScan lidar) {
 Location Particle::calcPos(int angle, int distance) {
 	double norm;
 	double angleRad;
-
 	Location projection;
-	//std::cout << "particle position : " << this->getLoc()->getX() << ","	<< this->getLoc()->getY() << "," << this->getLoc()->getYaw()<< std::endl;
-
 	angleRad = ((this->getLoc()->getYaw() + 180 + angle) % 360) * PI / 180;
+	projection.setX(this->getLoc()->getX() + (distance * cos(angleRad)));
+	projection.setY(this->getLoc()->getY() + (distance * sin(angleRad)));
 
-	projection.setX(this->getLoc()->getX() + distance * cos(angleRad));
-	projection.setY(this->getLoc()->getY() + distance * sin(angleRad));
-
-	//std::cout << "projection position:  " << angleRad << ","<< projection.getX() << "," << projection.getY() << std::endl;
-
-//	norm = (distance) * (double) 100;
-//	if (norm <= 250) {
-//
-//		retVal.setY((int) (norm * sin(angleRad)) + 250);
-//		retVal.setX((int) (norm * cos(angleRad)) + 250);
-//
-//	}
 	return projection;
 }
 

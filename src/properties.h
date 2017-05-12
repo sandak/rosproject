@@ -10,8 +10,8 @@
 
 
 #define PI 3.14159265359
-#define INIT_PARTICLES_AMOUNT 20
-#define BELIEF_FACTOR 1.2
+#define INIT_PARTICLES_AMOUNT 400
+#define BELIEF_FACTOR 1.7
 #define IS_GETPOSE_ENABLED false
 #define ANGULAR_SPEED 133.0 // degrees per second (for 45 wheel angle) //TODO Measure real angular speed
 

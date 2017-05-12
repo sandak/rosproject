@@ -61,8 +61,7 @@ void RandomMovementPolicy::getScansBetween(double min, double max,
 	}
 }
 
-bool RandomMovementPolicy::willCollide(std::vector<double> distances,
-		int angle_from_center) {
+bool RandomMovementPolicy::willCollide(std::vector<double> distances,int angle_from_center) {
 	HamsterAPI::LidarScan scan = this->robot->getHamster()->getLidarScan();
 
 	double collisionThresh = COLLISIONRANGE;
