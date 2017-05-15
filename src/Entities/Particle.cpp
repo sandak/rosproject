@@ -26,6 +26,7 @@ double Particle::getBelief() {
 
 void Particle::update(HamsterAPI::LidarScan lidar, LocationDelta delta) {
 	this->loc->updateLocation(delta);
+	//this->belief = BELIEF_FACTOR * this->getBelief() * probByMove(delta)* probScanMatch(lidar);
 	this->belief =  probScanMatch(lidar);
 
 }

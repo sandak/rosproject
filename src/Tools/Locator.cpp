@@ -34,11 +34,13 @@ do{
 		updatAllParticles(robot->getLidarScan(), delta);
 		//std::cout << this->particles.size() << std::endl;
 		drawMap();
-
+		if (particles.size()>0)
+		{
 		maxParticle = this->getMaxBeliefParticle();
 		cout<< " MaxParticle "<<maxParticle->getBelief()<<endl;
+		}
 	}
-}while (maxParticle->getBelief() < 0.9);
+}while ((particles.size()==0) || maxParticle->getBelief() < 0.9);
 		cout<< "returning MaxParticle"<<endl;
 		return (maxParticle->getLoc());
 }
@@ -46,7 +48,7 @@ do{
 void Locator::updatAllParticles(HamsterAPI::LidarScan lidarScan,LocationDelta delta) {
 
 	vector<Particle*> * sons = new vector<Particle*>();
-	int particlesDeleted = 0 ;
+
 	vector<Particle*>::iterator itr = this->particles.begin();
 	while (itr != this->particles.end() && particles.size() != 0) {
 		try {
@@ -56,21 +58,21 @@ void Locator::updatAllParticles(HamsterAPI::LidarScan lidarScan,LocationDelta de
 
 			double bel = (*itr)->getBelief();
 
-			if (bel < 0.2) {
-				particlesDeleted++;
-				itr = particles.erase(itr);
+			if (bel < 0.1) {
+				delete(*itr);
+						itr = particles.erase(itr);
 			}
 			else{
-			if (bel >= 0.3 && bel <= 0.5) {
-				createSons(*itr, 20, 4, sons);
-			}
 			if (bel >= 0.5 && bel <= 0.7) {
-							createSons(*itr, 30, 3, sons);
+				createSons(*itr, 10, 3, sons);
+			}
+			if (bel >= 0.7 && bel <= 0.8) {
+							createSons(*itr, 10, 2, sons);
 						}
 
-			if (bel > 0.7) {
+			if (bel > 0.8) {
 
-				createSons(*itr, 40, 2, sons);
+				createSons(*itr, 10, 1, sons);
 			}
 			itr++;
 			}
@@ -78,10 +80,32 @@ void Locator::updatAllParticles(HamsterAPI::LidarScan lidarScan,LocationDelta de
 			cout << e.what() << endl;
 		}
 	}
+	normalizeParticlesSum();
 	mergeSonsWithFathers(sons);
-	spreadParticles(INIT_PARTICLES_AMOUNT*0.05);
+
+	//spreadParticles(INIT_PARTICLES_AMOUNT*0.05);
+	std::cout << "num of particles " << particles.size() <<std::endl;
 	delete sons;
 }
+
+void Locator::normalizeParticlesSum(){
+	if (particles.size()>INIT_PARTICLES_AMOUNT*3)
+	{
+		sortParticles();
+		vector<Particle*>::iterator itr = particles.begin();
+		int i =0;
+		int limit =  particles.size()- (INIT_PARTICLES_AMOUNT*1.2);
+
+		while (itr != particles.end()&&i<limit) {
+			delete(*itr);
+			itr = particles.erase(itr);
+			i++;
+		}
+	}
+
+
+}
+
 
 void Locator::mergeSonsWithFathers(vector<Particle*> * sons) {
 	vector<Particle*>::iterator itr = sons->begin();
@@ -118,9 +142,14 @@ void Locator::drawMap() {
 			}
 		}
 	}
-
+	sortParticles();
+	int order = 0;
 	while (itr != this->particles.end()) {
-		drawParticle(m, *itr, 5);
+		if (order >particles.size()-6)
+			drawParticle(m, *itr, 5,red);
+		else
+			drawParticle(m, *itr, 5,blue);
+		order++;
 		itr++;
 	}
 
@@ -130,7 +159,7 @@ void Locator::drawMap() {
 	cv::waitKey(1);
 }
 
-void Locator::drawParticle(cv::Mat_<cv::Vec3b>* m, Particle * p,int arrowLength) {
+void Locator::drawParticle(cv::Mat_<cv::Vec3b>* m, Particle * p,int arrowLength, Color drawColor) {
 	float x = p->getLoc()->getX();
 	float y = p->getLoc()->getY();
 	float i = y / map.getResolution();
@@ -140,7 +169,19 @@ void Locator::drawParticle(cv::Mat_<cv::Vec3b>* m, Particle * p,int arrowLength)
 	int mapW = map.getWidth();
 	float j_end, i_end;
 	if (i < mapH && i > 0 && j < mapW && j > 0) {
-		cv::Scalar_<double> * color = new cv::Scalar_<double>(0, 0, 255);
+		cv::Scalar_<double> * color;
+		switch (drawColor){
+		case red:
+		color = new cv::Scalar_<double>(0, 0, 255);
+		break;
+		case blue:
+		color = new cv::Scalar_<double>(255, 0, 0);
+		break;
+		default:
+		color = new cv::Scalar_<double>(255, 0, 0);
+		break;
+
+		}
 		cv::Point_<int>* start = new cv::Point_<int>((int) (i), (int) (j));
 		j_end = j + (arrowLength * std::cos(yawRad));
 		i_end = i + (arrowLength * std::sin(yawRad));
@@ -197,7 +238,7 @@ int i,j;
 void Locator::createSons(Particle *father, int count, int radius,vector<Particle*> * sons) {
 	try{
 		time_t t;
-		int x, y;
+		double x, y;
 		double yaw;
 		/* Intializes random number generator */
 		srand((unsigned) time(&t));
@@ -207,8 +248,8 @@ void Locator::createSons(Particle *father, int count, int radius,vector<Particle
 			triesCount = 1; //going to count how many tries to create child were attempted
 			do {
 				//TODO there is a particle jumping in from nowhere
-				x = rand() % (radius + 1);
-				y = rand() % (radius + 1);
+				x = (rand() % (radius*100 + 1))/100;
+				y = (rand() % (radius*100 + 1))/100;
 				int factor1 = rand() % 2;
 				int factor2 = rand() % 2;
 				if (factor1 == 0)
@@ -236,7 +277,7 @@ void Locator::createSons(Particle *father, int count, int radius,vector<Particle
 }
 
 Particle* Locator::getMaxBeliefParticle() {
-
+/*
 	vector<Particle*>::iterator itr = this->particles.begin();
 	double maxBelief = -1;
 	Particle * maxParticle;
@@ -250,7 +291,20 @@ Particle* Locator::getMaxBeliefParticle() {
 		itr++;
 	}
 	return maxParticle;
+	*/
+	if(particles.size()>0)
+		return particles[particles.size()-1];
+	else
+		return NULL;
 }
+
+bool pcomperator (Particle * a,Particle * b) {
+	return (a->getBelief()<b->getBelief()); }
+
+void Locator::sortParticles() {
+	std::sort(particles.begin(),particles.end(),pcomperator);}
+
+
 
 Locator::~Locator() {
 // TODO Auto-generated destructor stub

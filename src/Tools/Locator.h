@@ -9,7 +9,10 @@
 #define SRC_LOCATOR_H_
 #include <vector>
 #include <iterator>
+#include <algorithm>
+
 #include <HamsterAPIClientCPP/Hamster.h>
+
 #include "../Entities/Entity.h"
 #include "../Entities/Location.h"
 #include "../Entities/Particle.h"
@@ -25,11 +28,18 @@ private:
 	HamsterAPI::OccupancyGrid map;
 	Robot * robot;
 
+enum Color {
+	    red,
+	    blue
+	};
+
 	void createSons(Particle *father ,int count ,int radius , vector<Particle *> *sons);
 	void mergeSonsWithFathers(vector<Particle*>* sons);
 	void drawRobot(cv::Mat_<cv::Vec3b>* m);
-	void drawParticle(cv::Mat_<cv::Vec3b>* m,Particle * p,int arrowLength);
+	void drawParticle(cv::Mat_<cv::Vec3b>* m,Particle * p,int arrowLength, Color color);
 	void drawEntity(Entity entity);
+	//bool comperator (Particle * a,Particle * b);
+	void normalizeParticlesSum();
 public:
 
 
@@ -40,6 +50,9 @@ public:
 	void updatAllParticles(HamsterAPI::LidarScan lidarScan , LocationDelta delta);
 	void drawMap();
 	virtual ~Locator();
+	void sortParticles();
+
+
 };
 
 #endif /* SRC_LOCATOR_H_ */
