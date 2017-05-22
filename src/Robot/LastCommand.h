@@ -3,6 +3,6 @@ struct LastCommand{
 
 	float speed;
 	float angle;
-	long time;
+	double time;
 
 };

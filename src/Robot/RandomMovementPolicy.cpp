@@ -178,16 +178,16 @@ struct LastCommand RandomMovementPolicy::moveBackwards() {
 
 	HamsterAPI::Log::i("Client", "Moving Backwards");
 	//TODO need fix while with command
-	if (!isLeftFree() && !isRightFree() && isBackFree()) {
-		this->robot->getHamster()->sendSpeed(-0.4, 0.0);
-		command.speed = -0.4;
+	//if (!isLeftFree() && !isRightFree() && isBackFree()) {
+		this->robot->getHamster()->sendSpeed(-1, 0.0);
+		command.speed = -1;
 		command.angle = 0.0;
 		command.time = getTimeMil();
-	}
-	if (isLeftFree())
-		command = turnLeft();
-	else
-		command = turnRight();
+	//}
+//	if (isLeftFree())
+//		command = turnLeft();
+//	else
+//		command = turnRight();
 
 	return command;
 }

@@ -73,17 +73,21 @@ LocationDelta Robot::updatePose(struct LastCommand newCommand) {
 
 	struct LocationDelta delta;
 
-	long t = newCommand.time - this->lastCommand.time; //milliseconds
+	double t = newCommand.time - this->lastCommand.time; //milliseconds
 
 	delta.distance = newCommand.speed * t / 1000.0; // dividing by 1000 to convert from meter over second to meter over milli seconds
 	//delta.angle = lastCommand.angle;
 	if(newCommand.angle == 45)
 	{
+
 		delta.angle = t*ANGULAR_SPEED/1000.0; //dividing by 1000 to convert from angle over second to angle over millisecond
+
 	}
 	else if(newCommand.angle == -45)
 	{
+
 		delta.angle = t*ANGULAR_SPEED/1000.0*(-1.0);
+
 	}
 	else{
 		delta.angle = 0.0;

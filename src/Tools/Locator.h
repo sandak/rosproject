@@ -30,7 +30,8 @@ private:
 
 enum Color {
 	    red,
-	    blue
+	    blue,
+		green
 	};
 
 	void createSons(Particle *father ,int count ,int radius , vector<Particle *> *sons);
@@ -49,6 +50,7 @@ public:
 	Particle* getMaxBeliefParticle();
 	void updatAllParticles(HamsterAPI::LidarScan lidarScan , LocationDelta delta);
 	void drawMap();
+	void drawMaxMap();
 	virtual ~Locator();
 	void sortParticles();
 

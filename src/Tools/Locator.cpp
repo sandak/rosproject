@@ -25,14 +25,12 @@ do{
 	maxParticle = getMaxBeliefParticle();
 
 
-	while (maxParticle->getBelief() < 0.9 && particles.size() != 0) {
+	while (maxParticle->getBelief() < BELIEF_DEST && particles.size() != 0) {
 
 		numOfIterations++;
 
 		LocationDelta delta = robot->moveRobot();
-		//std::cout << this->particles.size() << std::endl;
 		updatAllParticles(robot->getLidarScan(), delta);
-		//std::cout << this->particles.size() << std::endl;
 		drawMap();
 		if (particles.size()>0)
 		{
@@ -40,7 +38,7 @@ do{
 		cout<< " MaxParticle "<<maxParticle->getBelief()<<endl;
 		}
 	}
-}while ((particles.size()==0) || maxParticle->getBelief() < 0.9);
+}while ((particles.size()==0) || maxParticle->getBelief() < BELIEF_DEST);
 		cout<< "returning MaxParticle"<<endl;
 		return (maxParticle->getLoc());
 }
@@ -64,15 +62,15 @@ void Locator::updatAllParticles(HamsterAPI::LidarScan lidarScan,LocationDelta de
 			}
 			else{
 			if (bel >= 0.5 && bel <= 0.7) {
-				createSons(*itr, 10, 3, sons);
+				createSons(*itr, 3, 3, sons);
 			}
 			if (bel >= 0.7 && bel <= 0.8) {
-							createSons(*itr, 10, 2, sons);
+					createSons(*itr, 4, 2, sons);
 						}
 
 			if (bel > 0.8) {
 
-				createSons(*itr, 10, 1, sons);
+				createSons(*itr, 4, 1, sons);
 			}
 			itr++;
 			}
@@ -159,6 +157,36 @@ void Locator::drawMap() {
 	cv::waitKey(1);
 }
 
+void Locator::drawMaxMap() {
+
+	cv::Mat_<cv::Vec3b>* m = new cv::Mat_<cv::Vec3b>(this->map.getHeight(),	this->map.getWidth());
+	vector<Particle*>::iterator itr = this->particles.begin();
+	u_int i, j;
+
+	for (i = 0; i < this->map.getHeight(); i++) {
+		for (j = 0; j < this->map.getWidth(); j++) {
+			if (map.getCell(i, j) == HamsterAPI::CELL_OCCUPIED) {
+				m->at<cv::Vec3b>(i, j).val[0] = 0;
+				m->at<cv::Vec3b>(i, j).val[1] = 0;
+				m->at<cv::Vec3b>(i, j).val[2] = 0;
+			} else if (map.getCell(i, j) == HamsterAPI::CELL_FREE) {
+				m->at<cv::Vec3b>(i, j).val[0] = 255;
+				m->at<cv::Vec3b>(i, j).val[1] = 255;
+				m->at<cv::Vec3b>(i, j).val[2] = 255;
+			} else {
+				m->at<cv::Vec3b>(i, j).val[0] = 127;
+				m->at<cv::Vec3b>(i, j).val[1] = 127;
+				m->at<cv::Vec3b>(i, j).val[2] = 127;
+			}
+		}
+	}
+	sortParticles();
+	drawParticle(m, particles[particles.size()-1], 5,green);
+
+	cv::imshow("locating", *m);
+	cv::waitKey(1);
+}
+
 void Locator::drawParticle(cv::Mat_<cv::Vec3b>* m, Particle * p,int arrowLength, Color drawColor) {
 	float x = p->getLoc()->getX();
 	float y = p->getLoc()->getY();
@@ -177,6 +205,9 @@ void Locator::drawParticle(cv::Mat_<cv::Vec3b>* m, Particle * p,int arrowLength,
 		case blue:
 		color = new cv::Scalar_<double>(255, 0, 0);
 		break;
+		case green:
+				color = new cv::Scalar_<double>(0, 255, 0);
+				break;
 		default:
 		color = new cv::Scalar_<double>(255, 0, 0);
 		break;
@@ -188,6 +219,23 @@ void Locator::drawParticle(cv::Mat_<cv::Vec3b>* m, Particle * p,int arrowLength,
 		cv::Point_<int>* end = new cv::Point_<int>((int) (i_end), (int) (j_end));
 		cv::line(*m, *start, *end, *color, 1, 1, 0);
 		cv::circle(*m, *start, 2, *color, 1, 1, 0);
+
+		////////draw projections////////
+		HamsterAPI::LidarScan scan = robot->getHamster()->getLidarScan();
+		for (int k = 0; k < 360; k++) {
+
+			if (scan.getDistance(i) < scan.getMaxRange() - 0.001) {
+				Location projection = p->calcPos(k, scan.getDistance(k));
+				int i = projection.getX() / this->map.getResolution();
+				int j = projection.getY() / this->map.getResolution();
+
+				m->at<cv::Vec3b>(i, j).val[0] = 0;
+				m->at<cv::Vec3b>(i, j).val[1] = 0;
+				m->at<cv::Vec3b>(i, j).val[2] = 255;
+
+			}
+		}
+
 	}
 
 }
@@ -227,8 +275,8 @@ int i,j;
 			j = rand() % this->map.getWidth();
 			yaw = rand() % 360;
 		} while (map.getCell(j, i) != HamsterAPI::CELL_FREE);
-		x = j *  map.getResolution();
-		y = i * map.getResolution();
+		x = (double)j *  map.getResolution();
+		y = (double)i * map.getResolution();
 		particles.push_back(new Particle(x , y ,yaw, this->map));
 
 	}
@@ -247,9 +295,9 @@ void Locator::createSons(Particle *father, int count, int radius,vector<Particle
 		for (int h = 0; h < count; h++) {
 			triesCount = 1; //going to count how many tries to create child were attempted
 			do {
-				//TODO there is a particle jumping in from nowhere
-				x = (rand() % (radius*100 + 1))/100;
-				y = (rand() % (radius*100 + 1))/100;
+
+				x = (rand() % (radius*100 + 1))/100.0;
+				y = (rand() % (radius*100 + 1))/100.0;
 				int factor1 = rand() % 2;
 				int factor2 = rand() % 2;
 				if (factor1 == 0)

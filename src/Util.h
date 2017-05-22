@@ -8,6 +8,6 @@
 #ifndef SRC_UTIL_H_
 #define SRC_UTIL_H_
 
-long getTimeMil();
+double getTimeMil();
 
 #endif /* SRC_UTIL_H_ */
